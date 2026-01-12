@@ -1,0 +1,20 @@
+name: Gemini AI Code Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+permissions: write-all
+
+jobs:
+  gemini-code-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - uses: ClareAI/gemini-ai-code-reviewer@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-1.5-pro-002 # Optional, default is `gemini-1.5-flash-002`
+          EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
