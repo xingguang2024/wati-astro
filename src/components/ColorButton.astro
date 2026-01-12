@@ -1,0 +1,104 @@
+---
+/**
+ * ColorButton Component
+ * 
+ * A button/badge with a gradient border effect.
+ * Replicates the .colorbtn style from the original template.
+ * 
+ * @param href - Optional link URL (makes it an anchor tag)
+ * @param class - Additional CSS classes
+ */
+
+interface Props {
+  href?: string;
+  class?: string;
+}
+
+const { href, class: className } = Astro.props;
+const Element = href ? 'a' : 'span';
+---
+
+<Element 
+  href={href}
+  class:list={['color-btn', className]}
+>
+  <slot />
+</Element>
+
+<style>
+  .color-btn {
+    /* Layout */
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Spacing */
+    padding: 6px 13px;
+    margin-bottom: 15px;
+    
+    /* Typography */
+    font-family: "DM Sans", sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+    
+    /* Appearance */
+    color: #3F3F46;
+    text-decoration: none;
+    background: transparent;
+    border-radius: 30px;
+    
+    /* Positioning */
+    z-index: 1;
+  }
+  
+  /* Gradient border effect using pseudo-element */
+  .color-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px; /* This creates the border width */
+    border-radius: 30px;
+    
+    /* Conic gradient for the border */
+    background: conic-gradient(
+      from 90deg at 50% 50%,
+      #F07C5B 0deg,
+      #E26C90 190.8deg,
+      #4593DD 315deg,
+      #F07C5B 360deg
+    );
+    
+    /* Mask to create the border effect */
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    
+    /* Prevent interference with clicks */
+    pointer-events: none;
+  }
+  
+  /* Hover effect */
+  .color-btn:hover {
+    background: rgba(0, 0, 0, 0.02);
+  }
+  
+  /* White variant (for dark backgrounds) */
+  .color-btn.white {
+    color: #fff;
+  }
+  
+  /* Small variant */
+  .color-btn.small {
+    font-size: 14px;
+    padding: 4px 10px;
+  }
+  
+  /* No margin variant */
+  .color-btn.no-margin {
+    margin-bottom: 0;
+  }
+</style>

@@ -1,0 +1,153 @@
+---
+const currentYear = new Date().getFullYear();
+
+const footerLinks = {
+  product: [
+    { name: 'Features', href: '#features' },
+    { name: 'Pricing', href: '#pricing' },
+    { name: 'Integrations', href: '#integrations' },
+    { name: 'API', href: '#api' }
+  ],
+  company: [
+    { name: 'About', href: '#about' },
+    { name: 'Blog', href: '#blog' },
+    { name: 'Careers', href: '#careers' },
+    { name: 'Contact', href: '#contact' }
+  ],
+  resources: [
+    { name: 'Documentation', href: '#docs' },
+    { name: 'Help Center', href: '#help' },
+    { name: 'Community', href: '#community' },
+    { name: 'Status', href: '#status' }
+  ],
+  legal: [
+    { name: 'Privacy', href: '#privacy' },
+    { name: 'Terms', href: '#terms' },
+    { name: 'Security', href: '#security' }
+  ]
+};
+
+const socialLinks = [
+  { name: 'Twitter', href: '#', icon: 'twitter' },
+  { name: 'LinkedIn', href: '#', icon: 'linkedin' },
+  { name: 'GitHub', href: '#', icon: 'github' }
+];
+---
+
+<footer class="bg-zinc-900 text-white py-16">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-2 mb-4">
+          <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="8" fill="url(#gradient-footer)"/>
+            <path d="M20 10L28 18L20 26L12 18L20 10Z" fill="white"/>
+            <defs>
+              <linearGradient id="gradient-footer" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#8564FF"/>
+                <stop offset="0.5" stop-color="#4D71FF"/>
+                <stop offset="1" stop-color="#E26C90"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="text-xl font-bold">Astra</span>
+        </div>
+        <p class="text-zinc-400 text-sm mb-4">
+          AI Agent Orchestration Platform for modern businesses.
+        </p>
+        <div class="flex gap-4">
+          {socialLinks.map(social => (
+            <a 
+              href={social.href} 
+              class="text-zinc-400 hover:text-white transition-colors"
+              aria-label={social.name}
+            >
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                {social.icon === 'twitter' && (
+                  <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                )}
+                {social.icon === 'linkedin' && (
+                  <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z"/>
+                )}
+                {social.icon === 'github' && (
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+                )}
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Product -->
+      <div>
+        <h3 class="font-semibold text-white mb-4">Product</h3>
+        <ul class="space-y-2">
+          {footerLinks.product.map(link => (
+            <li>
+              <a href={link.href} class="text-zinc-400 hover:text-white text-sm transition-colors">
+                {link.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <h3 class="font-semibold text-white mb-4">Company</h3>
+        <ul class="space-y-2">
+          {footerLinks.company.map(link => (
+            <li>
+              <a href={link.href} class="text-zinc-400 hover:text-white text-sm transition-colors">
+                {link.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div>
+        <h3 class="font-semibold text-white mb-4">Resources</h3>
+        <ul class="space-y-2">
+          {footerLinks.resources.map(link => (
+            <li>
+              <a href={link.href} class="text-zinc-400 hover:text-white text-sm transition-colors">
+                {link.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <h3 class="font-semibold text-white mb-4">Legal</h3>
+        <ul class="space-y-2">
+          {footerLinks.legal.map(link => (
+            <li>
+              <a href={link.href} class="text-zinc-400 hover:text-white text-sm transition-colors">
+                {link.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="border-t border-zinc-800 pt-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-zinc-400 text-sm">
+          © {currentYear} Astra. All rights reserved.
+        </p>
+        <div class="flex gap-6 text-sm">
+          <a href="#privacy" class="text-zinc-400 hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#terms" class="text-zinc-400 hover:text-white transition-colors">Terms of Service</a>
+          <a href="#cookies" class="text-zinc-400 hover:text-white transition-colors">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
