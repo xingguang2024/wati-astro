@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
@@ -42,6 +43,7 @@ const {
     />
 
     <title>{title}</title>
+    <ClientRouter />
   </head>
   <body class="antialiased bg-white text-zinc-900 font-sans">
     <Header />
