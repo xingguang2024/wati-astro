@@ -12,22 +12,10 @@ interface FormData {
   phone: string;
 }
 
-interface HubSpotForm {
-  create: (config: {
-    region: string;
-    portalId: string;
-    formId: string;
-    target: HTMLElement;
-    onFormReady?: () => void;
-    onFormSubmit?: () => void;
-  }) => void;
-}
-
 declare global {
   interface Window {
-    hbspt?: {
-      forms: HubSpotForm;
-    };
+    hbspt?: any;
+    HubSpotFormsV4?: any;
   }
 }
 
@@ -37,7 +25,7 @@ export default function BookDemoModal({
   onFormSubmit,
 }: BookDemoModalProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [useIframe, setUseIframe] = useState(false);
   const formContainerRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -46,12 +34,8 @@ export default function BookDemoModal({
       dialogRef.current.showModal();
       document.body.style.overflow = "hidden";
 
-      // Initialize HubSpot form if not already initialized
-      if (!isInitialized) {
-        initializeHubSpotForm();
-      } else {
-        setIsLoading(false);
-      }
+      // Try to initialize HubSpot form
+      initializeHubSpotForm();
     } else if (dialogRef.current && !isOpen) {
       dialogRef.current.close();
       document.body.style.overflow = "";
@@ -61,7 +45,7 @@ export default function BookDemoModal({
       document.body.style.overflow = "";
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, isInitialized]);
+  }, [isOpen]);
 
   const initializeHubSpotForm = () => {
     setIsLoading(true);
@@ -69,11 +53,16 @@ export default function BookDemoModal({
     // Load HubSpot script if not loaded
     if (!window.hbspt) {
       const script = document.createElement("script");
-      script.src = "//js.hsforms.net/forms/v2.js";
+      script.src = "//js.hsforms.net/forms/embed/v2.js";
       script.async = true;
       script.charset = "utf-8";
       script.onload = () => {
         createForm();
+      };
+      script.onerror = () => {
+        console.error("Failed to load HubSpot script, falling back to iframe");
+        setUseIframe(true);
+        setIsLoading(false);
       };
       document.body.appendChild(script);
     } else {
@@ -83,63 +72,81 @@ export default function BookDemoModal({
 
   const createForm = () => {
     if (typeof window.hbspt !== "undefined" && formContainerRef.current) {
-      window.hbspt.forms.create({
-        region: "na1",
-        portalId: "2858726",
-        formId: "6dd802cc-f156-433b-ad75-27572cc84914",
-        target: formContainerRef.current,
-        onFormReady: () => {
-          console.log("HubSpot form ready");
-          setTimeout(() => {
+      try {
+        // Try to create form with v2/v3 API
+        window.hbspt.forms.create({
+          region: "na1",
+          portalId: "2858726",
+          formId: "6dd802cc-f156-433b-ad75-27572cc84914",
+          target: formContainerRef.current,
+          onFormReady: () => {
+            console.log("HubSpot form ready (v2/v3)");
             setIsLoading(false);
-            setIsInitialized(true);
-          }, 100);
-        },
-        onFormSubmit: () => {
-          console.log("Form submitting...");
-        },
-      });
-
-      // Listen for HubSpot form submission event (v4 forms)
-      window.addEventListener("message", function (event) {
-        if (
-          event.data.type === "hsFormCallback" &&
-          event.data.eventName === "onFormSubmitted"
-        ) {
-          console.log("Form submission complete");
-
-          // Extract form data from event
-          const formData: FormData = {
-            firstname: "",
-            email: "",
-            phone: "",
-          };
-
-          // Get submitted data
-          if (event.data.data) {
-            event.data.data.forEach(
-              (field: { name: string; value: string }) => {
-                if (field.name === "firstname")
-                  formData.firstname = field.value;
-                if (field.name === "email") formData.email = field.value;
-                if (field.name === "phone") formData.phone = field.value;
-              },
-            );
-          }
-
-          console.log("Form data extracted:", formData);
-
-          // Callback to parent
-          if (onFormSubmit) {
-            onFormSubmit(formData);
-          }
-        }
-      });
+          },
+          onFormSubmit: () => {
+            console.log("Form submitting...");
+          },
+        });
+      } catch (error) {
+        console.error("Error creating HubSpot form with API:", error);
+        console.log("Falling back to iframe embed");
+        setUseIframe(true);
+        setIsLoading(false);
+      }
     } else {
-      console.log("HubSpot not available, retrying...");
-      setTimeout(createForm, 100);
+      console.log("HubSpot not available, using iframe");
+      setUseIframe(true);
+      setIsLoading(false);
     }
   };
+
+  // Listen for HubSpot v4 form submission event
+  useEffect(() => {
+    const handleFormSubmission = async (event: any) => {
+      // v4 form event
+      if (event.detail && event.detail.type === "ON_FORM_SUBMITTED") {
+        console.log("Form submission (v4) complete", event.detail);
+        handleFormData(event.detail.data);
+      }
+      
+      // v2/v3 form event via message
+      if (event.data?.type === "hsFormCallback" && event.data?.eventName === "onFormSubmitted") {
+        console.log("Form submission (v2/v3) complete", event.data);
+        handleFormData(event.data.data);
+      }
+    };
+
+    const handleFormData = (data: any) => {
+      const formData: FormData = {
+        firstname: "",
+        email: "",
+        phone: "",
+      };
+
+      if (Array.isArray(data)) {
+        data.forEach((field: { name: string; value: string }) => {
+          if (field.name === "firstname") formData.firstname = field.value;
+          if (field.name === "email") formData.email = field.value;
+          if (field.name === "phone") formData.phone = field.value;
+        });
+      }
+
+      console.log("Form data extracted:", formData);
+
+      if (onFormSubmit) {
+        onFormSubmit(formData);
+      }
+    };
+
+    // Listen for both v4 and message-based events
+    window.addEventListener("hs-form-event", handleFormSubmission as any);
+    window.addEventListener("message", handleFormSubmission);
+    
+    return () => {
+      window.removeEventListener("hs-form-event", handleFormSubmission as any);
+      window.removeEventListener("message", handleFormSubmission);
+    };
+  }, [onFormSubmit]);
 
   const handleClose = () => {
     document.body.style.overflow = "";
@@ -184,11 +191,26 @@ export default function BookDemoModal({
             </div>
           )}
 
-          <div
-            id="astra-hubspot-form"
-            ref={formContainerRef}
-            className={isLoading ? "hidden" : "block"}
-          />
+          {/* HubSpot Form Container (for API embed) */}
+          {!useIframe && (
+            <div
+              id="astra-hubspot-form"
+              ref={formContainerRef}
+              className={isLoading ? "hidden" : "block"}
+            />
+          )}
+
+          {/* HubSpot Form iframe (fallback) */}
+          {useIframe && (
+            <iframe
+              src="https://share.hsforms.com/1bdyAzMxTQ62tddJ1cshBFAfamea"
+              width="100%"
+              height="500"
+              frameBorder="0"
+              className="border-0"
+              title="Book a Demo Form"
+            />
+          )}
         </div>
       </div>
 
