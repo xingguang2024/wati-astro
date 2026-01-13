@@ -10,6 +10,7 @@
  * - Multiple CTA buttons
  */
 
+import CodeJumpClient from "./CodeJumpClient.astro";
 interface Props {
   class?: string;
 }
@@ -17,7 +18,7 @@ interface Props {
 const { class: className } = Astro.props;
 ---
 
-<header id="masthead" class:list={['site-header', className]}>
+<header id="masthead" class:list={["site-header", className]}>
   <div class="top-navigation">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between py-5">
@@ -39,7 +40,7 @@ const { class: className } = Astro.props;
             <li class="astra-pricing-menu-link">
               <a
                 href="/products/astra/pricing/"
-                class="font-['DM_Sans'] font-medium text-base leading-6 text-zinc-900 hover:font-bold transition-all relative after:content-[attr(data-text)] after:font-bold after:h-0 after:overflow-hidden after:invisible after:block"
+                class="font-medium text-base leading-6 text-zinc-900 hover:font-bold transition-all relative after:content-[attr(data-text)] after:font-bold after:h-0 after:overflow-hidden after:invisible after:block"
                 data-text="Pricing"
               >
                 Pricing
@@ -63,7 +64,7 @@ const { class: className } = Astro.props;
         <div class="hidden md:flex items-center gap-3">
           <button
             id="astraBookDemoBtn"
-            class="header-cta-btn font-['DM_Sans'] font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300"
+            class="header-cta-btn cursor-pointer font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300"
           >
             Book a demo
           </button>
@@ -72,7 +73,7 @@ const { class: className } = Astro.props;
             href="https://astra.wati.io/register/"
             target="_blank"
             rel="noopener"
-            class="header-cta-btn font-['DM_Sans'] font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300"
+            class="header-cta-btn font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300"
           >
             Get started for free
           </a>
@@ -81,7 +82,7 @@ const { class: className } = Astro.props;
             href="https://astra.wati.io/register/"
             target="_blank"
             rel="noopener"
-            class="header-cta-btn font-['DM_Sans'] font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300 border-l-2 pl-4 ml-2"
+            class="header-cta-btn font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300 border-l-2 pl-4 ml-2"
           >
             Login / Sign up
           </a>
@@ -93,9 +94,15 @@ const { class: className } = Astro.props;
           id="mobileMenuToggle"
           aria-label="Toggle menu"
         >
-          <span class="block w-[26px] h-[3px] bg-black my-1 transition-transform duration-400"></span>
-          <span class="block w-[26px] h-[3px] bg-black my-1 transition-opacity duration-400"></span>
-          <span class="block w-[26px] h-[3px] bg-black my-1 transition-transform duration-400"></span>
+          <span
+            class="block w-[26px] h-[3px] bg-black my-1 transition-transform duration-400"
+          ></span>
+          <span
+            class="block w-[26px] h-[3px] bg-black my-1 transition-opacity duration-400"
+          ></span>
+          <span
+            class="block w-[26px] h-[3px] bg-black my-1 transition-transform duration-400"
+          ></span>
         </button>
       </div>
     </div>
@@ -105,7 +112,8 @@ const { class: className } = Astro.props;
   <div
     class="menu-overlay fixed inset-0 bg-black/60 opacity-0 invisible transition-all duration-400 z-9998"
     id="menuOverlay"
-  ></div>
+  >
+  </div>
 
   <!-- Mobile Menu -->
   <div
@@ -214,8 +222,8 @@ const { class: className } = Astro.props;
 
   /* CTA Button hover effect - show arrow */
   .header-cta-btn:hover::after {
-    content: '';
-    background: url('/images/arrow-white.svg') no-repeat center;
+    content: "";
+    background: url("/images/arrow-white.svg") no-repeat center;
     background-size: contain;
     width: 16px !important;
     height: 16px !important;
@@ -245,55 +253,60 @@ const { class: className } = Astro.props;
 
 <script>
   // Scroll effect
-  const header = document.getElementById('masthead');
+  const header = document.getElementById("masthead");
 
-  window.addEventListener('scroll', () => {
+  window.addEventListener("scroll", () => {
     if (window.scrollY > 50) {
-      header?.classList.add('scrolled');
+      header?.classList.add("scrolled");
     } else {
-      header?.classList.remove('scrolled');
+      header?.classList.remove("scrolled");
     }
   });
 
   // Mobile menu toggle
-  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-  const mobileMenu = document.getElementById('mobileMenu');
-  const menuOverlay = document.getElementById('menuOverlay');
+  const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const menuOverlay = document.getElementById("menuOverlay");
 
   function toggleMobileMenu() {
-    mobileMenuToggle?.classList.toggle('active');
-    mobileMenu?.classList.toggle('active');
-    menuOverlay?.classList.toggle('active');
-    document.body.style.overflow = mobileMenu?.classList.contains('active') ? 'hidden' : '';
+    mobileMenuToggle?.classList.toggle("active");
+    mobileMenu?.classList.toggle("active");
+    menuOverlay?.classList.toggle("active");
+    document.body.style.overflow = mobileMenu?.classList.contains("active")
+      ? "hidden"
+      : "";
   }
 
-  mobileMenuToggle?.addEventListener('click', toggleMobileMenu);
-  menuOverlay?.addEventListener('click', toggleMobileMenu);
+  mobileMenuToggle?.addEventListener("click", toggleMobileMenu);
+  menuOverlay?.addEventListener("click", toggleMobileMenu);
 
   // Close menu when clicking a link
-  const mobileMenuLinks = mobileMenu?.querySelectorAll('a');
-  mobileMenuLinks?.forEach(link => {
-    link.addEventListener('click', () => {
-      if (!link.getAttribute('href')?.startsWith('#')) {
+  const mobileMenuLinks = mobileMenu?.querySelectorAll("a");
+  mobileMenuLinks?.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (!link.getAttribute("href")?.startsWith("#")) {
         toggleMobileMenu();
       }
     });
   });
 
   // Book demo buttons
-  const bookDemoButtons = ['astraBookDemoBtn', 'astraBookDemoBtnMobile'];
-  bookDemoButtons.forEach(btnId => {
+  const bookDemoButtons = ["astraBookDemoBtn", "astraBookDemoBtnMobile"];
+  bookDemoButtons.forEach((btnId) => {
     const btn = document.getElementById(btnId);
-    btn?.addEventListener('click', (e) => {
+    btn?.addEventListener("click", (e) => {
       e.preventDefault();
       // Trigger modal (handled in astra.astro)
-      const event = new CustomEvent('openBookDemoModal');
+      const event = new CustomEvent("openBookDemoModal");
       window.dispatchEvent(event);
 
       // Close mobile menu if open
-      if (mobileMenu?.classList.contains('active')) {
+      if (mobileMenu?.classList.contains("active")) {
         toggleMobileMenu();
       }
     });
   });
 </script>
+
+<!-- Code Jump Client Script (development only) -->
+<CodeJumpClient />
