@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* Markdown Content Styles */
+.prose {
+  @apply text-zinc-700 leading-relaxed;
+}
+
+.prose h1 {
+  @apply text-4xl font-bold text-zinc-900 mt-12 mb-6 first:mt-0;
+}
+
+.prose h2 {
+  @apply text-3xl font-bold text-zinc-900 mt-10 mb-5 first:mt-0;
+}
+
+.prose h3 {
+  @apply text-2xl font-semibold text-zinc-900 mt-8 mb-4 first:mt-0;
+}
+
+.prose h4 {
+  @apply text-xl font-semibold text-zinc-900 mt-6 mb-3 first:mt-0;
+}
+
+.prose p {
+  @apply text-lg my-5 leading-relaxed;
+}
+
+.prose a {
+  @apply text-blue-600 hover:text-blue-700 underline underline-offset-2 decoration-1 hover:decoration-2 transition-all;
+}
+
+.prose strong {
+  @apply font-bold text-zinc-900;
+}
+
+.prose em {
+  @apply italic;
+}
+
+.prose code {
+  @apply bg-zinc-100 text-zinc-800 px-1.5 py-0.5 rounded text-sm font-mono before:content-[''] after:content-[''];
+}
+
+.prose pre {
+  @apply bg-zinc-900 text-zinc-100 p-5 rounded-xl overflow-x-auto my-6 shadow-lg;
+}
+
+.prose pre code {
+  @apply bg-transparent text-zinc-100 p-0 text-sm;
+}
+
+.prose ul,
+.prose ol {
+  @apply my-6 ml-6;
+}
+
+.prose ul {
+  @apply list-disc space-y-3;
+}
+
+.prose ol {
+  @apply list-decimal space-y-3;
+}
+
+.prose li {
+  @apply text-lg leading-relaxed;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-blue-500 pl-5 py-1 my-6 italic text-zinc-600 bg-zinc-50 rounded-r-lg;
+}
+
+.prose hr {
+  @apply border-zinc-200 my-10;
+}
+
+.prose img {
+  @apply rounded-xl shadow-lg my-8 w-full;
+}
+
+.prose table {
+  @apply min-w-full divide-y divide-zinc-200 my-8 border border-zinc-200 rounded-xl overflow-hidden shadow-sm;
+}
+
+.prose thead {
+  @apply bg-zinc-50;
+}
+
+.prose th {
+  @apply px-6 py-4 text-left text-sm font-semibold text-zinc-900 uppercase tracking-wider;
+}
+
+.prose tbody {
+  @apply bg-white divide-y divide-zinc-200;
+}
+
+.prose td {
+  @apply px-6 py-4 text-sm text-zinc-700;
+}
+
+.prose tr:hover {
+  @apply bg-zinc-50;
+}
+
+/* Custom prose for dark content */
+.prose-invert {
+  @apply text-zinc-300;
+}
+
+.prose-invert h1,
+.prose-invert h2,
+.prose-invert h3,
+.prose-invert h4 {
+  @apply text-zinc-100;
+}
+
+.prose-invert a {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+.prose-invert strong {
+  @apply text-zinc-100;
+}
+
+.prose-invert code {
+  @apply bg-zinc-800 text-zinc-200;
+}
+
+.prose-invert pre {
+  @apply bg-zinc-950;
+}
+
+.prose-invert blockquote {
+  @apply border-blue-400 bg-zinc-800/50 text-zinc-400;
+}

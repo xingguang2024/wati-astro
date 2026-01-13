@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const allPosts = await getCollection('posts');
+const posts = allPosts.sort((a, b) =>
+  new Date(b.data.updatedDate ?? 0).valueOf() - new Date(a.data.updatedDate ?? 0).valueOf()
+);
+---
+
+<Layout title="Blog Posts">
+  <div class="min-h-screen bg-gradient-to-b from-zinc-50 to-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Page Header -->
+      <header class="text-center mb-16">
+        <h1 class="text-5xl sm:text-6xl font-bold text-zinc-900 mb-6">
+          Blog Posts
+        </h1>
+        <p class="text-xl text-zinc-600 max-w-2xl mx-auto">
+          Thoughts, tutorials, and insights about AI agents, development, and technology.
+        </p>
+      </header>
+
+      <!-- Posts Grid -->
+      {posts.length === 0 ? (
+        <div class="text-center py-20">
+          <p class="text-xl text-zinc-500">No posts yet. Check back soon!</p>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <article class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-zinc-100">
+              <!-- Post Image -->
+              <a href={`/posts/${post.id}/`} class="block">
+                {post.data.heroImage ? (
+                  <div class="aspect-video overflow-hidden bg-zinc-100">
+                    <img
+                      src={post.data.heroImage}
+                      alt={post.data.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div class="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                    </svg>
+                  </div>
+                )}
+              </a>
+
+              <!-- Post Content -->
+              <div class="p-6">
+                <a href={`/posts/${post.id}/`} class="block">
+                  <h2 class="text-xl font-bold text-zinc-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {post.data.title}
+                  </h2>
+                </a>
+
+                {post.data.description && (
+                  <p class="text-zinc-600 mb-4 line-clamp-3">
+                    {post.data.description}
+                  </p>
+                )}
+
+                {post.data.updatedDate && (
+                  <div class="flex items-center text-sm text-zinc-500 mb-4">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <time datetime={post.data.updatedDate.toISOString()}>
+                      {post.data.updatedDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </time>
+                  </div>
+                )}
+
+                <a
+                  href={`/posts/${post.id}/`}
+                  class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors group-hover:gap-2 gap-1"
+                >
+                  Read more
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
