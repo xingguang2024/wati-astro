@@ -6,6 +6,8 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { codeJumpPlugin } from "./vite-plugins/code-jump-plugin.ts";
 
+import cloudflare from "@astrojs/cloudflare";
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -19,5 +21,6 @@ export default defineConfig({
   },
 
   integrations: [react(), mdx(), sitemap()],
+  adapter: cloudflare(),
 });
 
