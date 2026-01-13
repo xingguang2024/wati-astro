@@ -16,15 +16,16 @@ interface Props {
 }
 
 const { class: className } = Astro.props;
+const isPricessPage = Astro.request.url.includes("/pricing/");
 ---
 
 <header id="masthead" class:list={["site-header", className]}>
   <div class="top-navigation">
     <div class="container mx-auto px-4">
-      <div class="flex items-center justify-between py-5">
+      <div class="flex items-center py-5">
         <!-- Logo -->
         <div class="shrink-0">
-          <a href="/products/astra/">
+          <a href="/astra/">
             <img
               src="/images/astra-logo.webp"
               alt="Astra AI Agent Logo"
@@ -35,17 +36,21 @@ const { class: className } = Astro.props;
         </div>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-8">
+        <nav class="hidden md:flex items-center gap-8 ml-30">
           <ul class="flex items-center gap-6 m-0 p-0 list-none">
-            <li class="astra-pricing-menu-link">
-              <a
-                href="/products/astra/pricing/"
-                class="font-medium text-base leading-6 text-zinc-900 hover:font-bold transition-all relative after:content-[attr(data-text)] after:font-bold after:h-0 after:overflow-hidden after:invisible after:block"
-                data-text="Pricing"
-              >
-                Pricing
-              </a>
-            </li>
+            {
+              isPricessPage ? null : (
+                <li class="astra-pricing-menu-link">
+                  <a
+                    href="/pricing/"
+                    class="font-medium text-base leading-6 text-zinc-900 hover:font-bold transition-all relative after:content-[attr(data-text)] after:font-bold after:h-0 after:overflow-hidden after:invisible after:block"
+                    data-text="Pricing"
+                  >
+                    Pricing
+                  </a>
+                </li>
+              )
+            }
             <li>
               <a href="https://www.wati.io/">
                 <img
@@ -61,7 +66,7 @@ const { class: className } = Astro.props;
         </nav>
 
         <!-- Desktop CTA Buttons -->
-        <div class="hidden md:flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-3 ml-auto">
           <button
             id="astraBookDemoBtn"
             class="header-cta-btn cursor-pointer font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300"
@@ -78,11 +83,13 @@ const { class: className } = Astro.props;
             Get started for free
           </a>
 
+          <span class="w-px h-4.5 bg-zinc-300"></span>
+
           <a
             href="https://astra.wati.io/register/"
             target="_blank"
             rel="noopener"
-            class="header-cta-btn font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300 border-l-2 pl-4 ml-2"
+            class="header-cta-btn font-semibold text-sm leading-5 text-zinc-900 border border-zinc-300 px-4 py-2 rounded-lg hover:bg-[#1A3478] hover:text-white hover:border-[#1A3478] transition-all duration-300 pl-2 ml-2"
           >
             Login / Sign up
           </a>
@@ -217,6 +224,8 @@ const { class: className } = Astro.props;
   /* CTA Buttons positioning - consistent width */
   .header-cta-btn {
     position: relative;
+  }
+  .header-cta-btn:hover {
     padding-right: 28px !important; /* Always reserve space for arrow */
   }
 
