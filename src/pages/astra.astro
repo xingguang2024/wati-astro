@@ -12,7 +12,7 @@ const description =
 <Layout title={title}>
   <!-- Hero Banner Section -->
   <section
-    class="relative min-h-screen flex items-center justify-center overflow-hidden pt-36 pb-24"
+    class="relative min-h-screen flex items-center justify-center overflow-hidden pt-36 md:pb-24"
   >
     <!-- Background Video -->
     <video
@@ -52,25 +52,14 @@ const description =
             href="https://astra.wati.io/register/"
             target="_blank"
             rel="noopener"
-            class="inline-flex items-center gap-2 bg-[#1A3478] text-white font-semibold text-lg px-6 py-3 rounded-lg hover:bg-[#152a5e] transition-colors"
+            class="inline-flex items-center gap-2 bg-[#1A3478] text-white font-semibold text-lg px-6 h-10.5 rounded-lg hover:bg-[#152a5e] transition-colors"
           >
             Get started for free
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              class="mt-0.5"
-            >
-              <path
-                d="M1 13L13 1M13 1H1M13 1V13"
-                stroke="currentColor"
-                stroke-width="2"></path>
-            </svg>
+            <img src="/images/arrowwhite.svg" class="w-4 h-4" />
           </a>
           <button
             id="bookDemoBtn"
-            class="inline-flex items-center gap-2 border-2 border-zinc-300 text-zinc-900 font-semibold text-lg px-6 py-3 rounded-lg hover:border-zinc-400 transition-colors"
+            class="inline-flex cursor-pointer items-center gap-2 border-2 border-zinc-300 text-zinc-900 font-semibold h-10.5 text-lg px-6 rounded-lg hover:border-zinc-400 transition-colors"
           >
             Book a demo
           </button>
@@ -96,7 +85,7 @@ const description =
   </section>
 
   <!-- Voice Agent Section -->
-  <section class="py-20">
+  <section class="md:py-20">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
         <ColorButton>Voice agent</ColorButton>
@@ -127,11 +116,19 @@ const description =
           class="inline-flex items-center gap-2 border-2 border-zinc-300 text-zinc-900 font-semibold text-lg px-8 py-3 rounded-lg hover:border-zinc-400 transition-colors"
         >
           Get started for free
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
-              d="M1 15L15 1M15 1H1M15 1V15"
-              stroke="currentColor"
-              stroke-width="2"></path>
+              d="M3.33337 7.99992H12.6667M12.6667 7.99992L8.00004 3.33325M12.6667 7.99992L8.00004 12.6666"
+              stroke="#27272A"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
       </div>
@@ -139,7 +136,7 @@ const description =
   </section>
 
   <!-- Key Features Section -->
-  <section class="py-24 md:py-32">
+  <section class="py-15 md:py-32">
     <div class="container mx-auto px-4">
       <div class="text-center mb-16">
         <ColorButton>Key features</ColorButton>
@@ -157,7 +154,7 @@ const description =
       <!-- Feature Cards -->
       <div class="space-y-6 max-w-6xl mx-auto">
         <!-- Feature 1 -->
-        <div class="bg-zinc-50 rounded-3xl overflow-hidden shadow-sm">
+        <div class="bg-zinc-50 rounded-3xl overflow-hidden">
           <div class="grid md:grid-cols-2 gap-8 items-center">
             <div class="p-8 md:p-12 order-2 md:order-1">
               <ColorButton class="small">Build fast</ColorButton>
@@ -188,7 +185,7 @@ const description =
         </div>
 
         <!-- Feature 2 -->
-        <div class="bg-zinc-50 rounded-3xl overflow-hidden shadow-sm">
+        <div class="bg-zinc-50 rounded-3xl overflow-hidden">
           <div class="grid md:grid-cols-2 gap-8 items-center">
             <div
               class="bg-linear-to-br from-pink-100 to-orange-100 p-8 rounded-3xl md:rounded-r-none"
@@ -213,7 +210,7 @@ const description =
         </div>
 
         <!-- Feature 3 -->
-        <div class="bg-zinc-50 rounded-3xl overflow-hidden shadow-sm">
+        <div class="bg-zinc-50 rounded-3xl overflow-hidden">
           <div class="grid md:grid-cols-2 gap-8 items-center">
             <div class="p-8 md:p-12 order-2 md:order-1">
               <ColorButton class="small">Deploy in minutes</ColorButton>
@@ -247,11 +244,19 @@ const description =
           class="inline-flex items-center gap-2 border-2 border-zinc-300 text-zinc-900 font-semibold text-lg px-8 py-3 rounded-lg hover:border-zinc-400 transition-colors"
         >
           Get started for free
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
-              d="M1 15L15 1M15 1H1M15 1V15"
-              stroke="currentColor"
-              stroke-width="2"></path>
+              d="M3.33337 7.99992H12.6667M12.6667 7.99992L8.00004 3.33325M12.6667 7.99992L8.00004 12.6666"
+              stroke="#27272A"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
       </div>
@@ -343,25 +348,25 @@ const description =
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
         <div
-          class="bg-white/80 rounded-xl shadow-md p-6 text-center backdrop-blur-sm"
+          class="bg-white/80 rounded-xl shadow-[0px_2px_4px_2px_#18181B1A] p-6 text-center backdrop-blur-sm"
         >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">100%</p>
           <p class="text-lg md:text-xl text-zinc-600">Instant response</p>
         </div>
         <div
-          class="bg-white/80 rounded-xl shadow-md p-6 text-center backdrop-blur-sm"
+          class="bg-white/80 rounded-xl shadow-[0px_2px_4px_2px_#18181B1A] p-6 text-center backdrop-blur-sm"
         >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">24/7</p>
           <p class="text-lg md:text-xl text-zinc-600">Availability</p>
         </div>
         <div
-          class="bg-white/80 rounded-xl shadow-md p-6 text-center backdrop-blur-sm"
+          class="bg-white/80 rounded-xl shadow-[0px_2px_4px_2px_#18181B1A] p-6 text-center backdrop-blur-sm"
         >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">30+</p>
           <p class="text-lg md:text-xl text-zinc-600">Multi-language support</p>
         </div>
         <div
-          class="bg-white/80 rounded-xl shadow-md p-6 text-center backdrop-blur-sm"
+          class="bg-white/80 rounded-xl shadow-[0px_2px_4px_2px_#18181B1A] p-6 text-center backdrop-blur-sm"
         >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">99%</p>
           <p class="text-lg md:text-xl text-zinc-600">User satisfaction</p>
@@ -374,7 +379,7 @@ const description =
   <section
     class="pt-20 pb-20 md:pb-125 bg-zinc-900 relative bg-[url('/images/integrations.webp')] bg-contain bg-no-repeat bg-bottom"
   >
-    <div class="container mx-auto px-4 relative z-10">
+    <div class="container mx-auto px-4 relative z-10 bg-[#0000007d]">
       <div class="text-center">
         <ColorButton class="white">Integrations</ColorButton>
         <h2 class="font-semibold text-4xl md:text-5xl text-white mb-6">
@@ -502,11 +507,19 @@ const description =
           class="inline-flex items-center gap-2 border-2 border-zinc-300 text-zinc-900 font-semibold text-lg px-8 py-3 rounded-lg hover:border-zinc-400 transition-colors"
         >
           Get started for free
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
-              d="M1 15L15 1M15 1H1M15 1V15"
-              stroke="currentColor"
-              stroke-width="2"></path>
+              d="M3.33337 7.99992H12.6667M12.6667 7.99992L8.00004 3.33325M12.6667 7.99992L8.00004 12.6666"
+              stroke="#27272A"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
       </div>
@@ -540,11 +553,19 @@ const description =
           class="inline-flex items-center gap-2 bg-white text-zinc-900 font-semibold text-lg px-8 py-3 rounded-lg hover:bg-zinc-100 transition-colors"
         >
           Get started for free
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
-              d="M1 15L15 1M15 1H1M15 1V15"
-              stroke="currentColor"
-              stroke-width="2"></path>
+              d="M3.33337 7.99992H12.6667M12.6667 7.99992L8.00004 3.33325M12.6667 7.99992L8.00004 12.6666"
+              stroke="#27272A"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
       </div>
@@ -571,11 +592,19 @@ const description =
           class="inline-flex items-center gap-2 border-2 border-zinc-300 text-zinc-900 font-semibold text-lg px-8 py-3 rounded-lg hover:border-zinc-400 transition-colors"
         >
           Get started for free
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
-              d="M1 15L15 1M15 1H1M15 1V15"
-              stroke="currentColor"
-              stroke-width="2"></path>
+              d="M3.33337 7.99992H12.6667M12.6667 7.99992L8.00004 3.33325M12.6667 7.99992L8.00004 12.6666"
+              stroke="#27272A"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
       </div>

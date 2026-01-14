@@ -50,9 +50,7 @@
   );
 
   /* Mask to create the border effect */
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 
@@ -79,4 +77,94 @@
 /* No margin variant */
 .color-btn.no-margin {
   margin-bottom: 0;
+}
+.colored-head {
+  background: conic-gradient(
+    from 129.55deg at 42.97% 50%,
+    #4593dd -61.47deg,
+    #f07c5b 68.13deg,
+    #e26c90 121.74deg,
+    #4593dd 298.53deg,
+    #f07c5b 428.13deg
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.table-bordered td,
+.table-bordered th {
+  border: 1px solid #36363c !important;
+}
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.colored-table {
+  background-color: #1e1e1e00;
+  color: #fff;
+  width: 100%;
+  border: 10px solid #52525b;
+  box-sizing: content-box;
+}
+
+/* Target last column cells */
+.colored-table th:last-child,
+.colored-table td:last-child {
+  position: relative;
+  background-clip: padding-box;
+}
+
+/* Gradient border overlay */
+.colored-table th:last-child::after,
+.colored-table td:last-child::after {
+  content: "";
+  position: absolute;
+  inset: -4px; /* border thickness */
+  padding-left: 4px;
+  padding-right: 4px;
+  background: conic-gradient(
+    from 90deg at 50% 50%,
+    #f07c5b 0deg,
+    #e26c90 190.8deg,
+    #4593dd 315deg,
+    #f07c5b 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.colored-table th:last-child::after {
+  content: "";
+  padding-top: 4px;
+  /* background: conic-gradient(
+        from 90deg at 50% 50%,
+        #F07C5B 0deg,
+        #E26C90 190.8deg,
+        #4593DD 315deg,
+        #F07C5B 360deg
+    ); */
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.colored-table tr:last-child td:last-child::after {
+  content: "";
+  padding-bottom: 4px;
+  background: conic-gradient(
+    from 90deg at 50% 50%,
+    #f07c5b 0deg,
+    #e26c90 190.8deg,
+    #4593dd 315deg,
+    #f07c5b 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }

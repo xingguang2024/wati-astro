@@ -35,7 +35,7 @@ bun run lint:fix
 ### Tech Stack
 - **Astro 5.x** - Static site generator with partial hydration
 - **React 19.x** - Interactive components via `@astrojs/react`
-- **Tailwind CSS 4.x** - Utility-first CSS via `@tailwindcss/vite`
+- **Tailwind CSS 4.x** - Utility-first CSS via `@tailwindcss/vite` (Vite plugin, not PostCSS)
 - **DaisyUI** - Component library on top of Tailwind
 - **TinaCMS** - Git-based headless CMS for content management
 - **MDX** - Markdown + JSX support via `@astrojs/mdx`
@@ -87,8 +87,9 @@ The project includes a custom Vite plugin for development:
 **code-jump-plugin** (`vite-plugins/code-jump-plugin.ts`)
 - Adds F2 hotkey to jump from browser to editor
 - Requires manual editor configuration in `astro.config.mjs`
-- Validates editor availability on startup
-- Provides installation guidance if editor is missing
+- Validates editor availability on startup with graceful degradation
+- Supports many editors: Cursor, VS Code, Neovim, Vim, JetBrains IDEs, etc.
+- Provides installation guidance if configured editor is missing
 
 ### Styling
 
@@ -98,12 +99,18 @@ The project includes a custom Vite plugin for development:
 - Use utility classes directly in components
 - DaisyUI themes configured in `tailwind.config.mjs`
 
-### TypeScript Configuration
+### TypeScript & ESLint Configuration
 
+**TypeScript:**
 - Extends `astro/tsconfigs/strict`
 - JSX set to `react-jsx` with import source `react`
 - Strict null checks enabled
-- `.astro` files excluded from ESLint (handled separately)
+
+**ESLint:**
+- Configured in `eslint.config.js` (flat config format)
+- `.astro` files excluded from linting (handled separately by Astro)
+- Import ordering enforced with `eslint-plugin-import`
+- React hooks rules enforced
 
 ### Deployment
 
