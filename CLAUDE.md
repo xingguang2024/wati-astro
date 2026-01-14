@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 bun install
 # or: npm install
 
-# Start development server (runs Tina CMS + Astro dev server)
+# Start development server
 bun run dev
 # or: npm run dev
 
@@ -37,8 +37,8 @@ bun run lint:fix
 - **React 19.x** - Interactive components via `@astrojs/react`
 - **Tailwind CSS 4.x** - Utility-first CSS via `@tailwindcss/vite` (Vite plugin, not PostCSS)
 - **DaisyUI** - Component library on top of Tailwind
-- **TinaCMS** - Git-based headless CMS for content management
 - **MDX** - Markdown + JSX support via `@astrojs/mdx`
+- **Plate.js** - Rich text editor with AI capabilities
 - **Cloudflare** - Deployment adapter for Cloudflare Pages
 
 ### Project Structure
@@ -52,8 +52,7 @@ src/
 ├── assets/           # Static assets
 └── content.config.ts # Astro content collections config
 
-content/posts/        # Blog posts (managed by TinaCMS)
-tina/                 # TinaCMS configuration and generated files
+content/posts/        # Blog posts
 vite-plugins/         # Custom Vite plugins (code-jump-plugin)
 public/               # Static assets served at root
 ```
@@ -69,16 +68,6 @@ public/               # Static assets served at root
 - Use for: FAQ accordions, modals, tabs, comparison tables
 - Require `client:*` directives when imported into `.astro` files
 - Common pattern: `import FAQ from '../components/FAQ'` then use as `<FAQ client:load />`
-
-### Content Management (TinaCMS)
-
-TinaCMS provides a Git-based CMS for managing blog posts:
-
-- **Configuration**: `tina/config.ts` - Defines collections and schemas
-- **Content Location**: `content/posts/` - Markdown/MDX files
-- **Dev Server**: Run `bun run dev` starts both TinaCMS and Astro
-- **Admin Build**: Outputs to `public/admin/` directory
-- **Schema Sync**: TinaCMS schema must match Astro content collections in `src/content.config.ts`
 
 ### Custom Vite Plugins
 
@@ -116,14 +105,11 @@ The project includes a custom Vite plugin for development:
 
 - **Adapter**: Cloudflare Pages (`@astrojs/cloudflare`)
 - Build output: `dist/` directory
-- Environment variables for TinaCMS:
-  - `NEXT_PUBLIC_TINA_CLIENT_ID`
-  - `TINA_TOKEN`
-  - `GITHUB_BRANCH` / `VERCEL_GIT_COMMIT_REF` / `HEAD`
 
 ### Pages
 
 - **index.astro** - Homepage
+- **editor.astro** - Blog editor page with AI-powered rich text editing
 - **astra.astro** - Astra AI Agent landing page
 - **pricing.astro** - Pricing page with interactive tabs and comparison tables
 
