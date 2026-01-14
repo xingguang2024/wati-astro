@@ -12,18 +12,17 @@ import {
 import { type SlateEditor, createSlateEditor, nanoid } from "platejs";
 import { z } from "zod";
 
+import type { ChatMessage, ToolName } from "@/components/editor/use-chat";
+import type { APIRoute } from "astro";
+
+import { BaseEditorKit } from "@/components/editor/editor-base-kit";
 import {
   buildEditTableMultiCellPrompt,
   getChooseToolPrompt,
   getCommentPrompt,
   getEditPrompt,
   getGeneratePrompt,
-} from "./prompt";
-
-import type { ChatMessage, ToolName } from "@/components/editor/use-chat";
-import type { APIRoute } from "astro";
-
-import { BaseEditorKit } from "@/components/editor/editor-base-kit";
+} from "@/lib/command/prompt";
 import { markdownJoinerTransform } from "@/lib/markdown-joiner-transform";
 
 export const prerender = false;
