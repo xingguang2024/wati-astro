@@ -2,6 +2,8 @@ import { createRouteHandler } from "uploadthing/server";
 
 import { ourFileRouter } from "@/lib/uploadthing";
 
+export const prerender = false;
+
 const handlers = createRouteHandler({
   router: ourFileRouter,
   config: {
