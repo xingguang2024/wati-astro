@@ -18,6 +18,9 @@ export default defineConfig({
         editor: "cursor", // Note: need to configure the specific editor commands.
       }),
     ],
+    ssr: {
+      noExternal: ["katex"],
+    },
   },
 
   integrations: [react(), mdx(), sitemap()],

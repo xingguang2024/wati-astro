@@ -1,0 +1,54 @@
+---
+import { PlateEditor } from "../components/editor/plate-editor";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Astra Blog Editor - AI-Powered Markdown Editor">
+  <div class="min-h-screen bg-background">
+    <!-- Header -->
+    <header class="border-b mt-14">
+      <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold">Astra Blog Editor</h1>
+        <p class="mt-2 text-muted-foreground">
+          AI-powered professional blog editor with Markdown support, real-time
+          collaboration, and intelligent assistance
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Editor -->
+    <main class="container mx-auto px-4 py-8">
+      <div class="rounded-lg border bg-background shadow">
+        <PlateEditor client:only="react" />
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t mt-12">
+      <div
+        class="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground"
+      >
+        <p>
+          Powered by <a
+            href="https://platejs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary hover:underline">Plate.js</a
+          >
+          {" "}and <a
+            href="https://openai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary hover:underline">OpenAI</a
+          >
+        </p>
+      </div>
+    </footer>
+  </div>
+</Layout>
+
+<style>
+  :global(.container) {
+    max-width: 1200px;
+  }
+</style>
