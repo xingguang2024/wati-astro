@@ -10,6 +10,11 @@ import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
+  server: {
+    host: true,
+    open: true,
+    port: 4321
+  },
   vite: {
     plugins: [
       tailwindcss(),
