@@ -365,7 +365,7 @@ const fakeStreamText = ({
 
         controller.enqueue(
           encoder.encode(
-            `data: {"type":"text-start","id":"${messageId}","providerMetadata":{"openai":{"itemId":"${messageId}"}}}\n\n`,
+            `data: {"type":"text-start","id":"${messageId}","providerMetadata":{"google":{"itemId":"${messageId}"}}}\n\n`,
           ),
         );
         await new Promise((resolve) => setTimeout(resolve, 10));

@@ -5,8 +5,7 @@ declare namespace App {
 }
 
 interface ImportMetaEnv {
-  readonly AI_GATEWAY_API_KEY?: string;
-  readonly OPENAI_API_KEY?: string;
+  readonly GOOGLE_API_KEY?: string;
 }
 
 interface ImportMeta {

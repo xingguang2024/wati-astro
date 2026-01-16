@@ -39,6 +39,7 @@ bun run lint:fix
 - **DaisyUI** - Component library on top of Tailwind
 - **MDX** - Markdown + JSX support via `@astrojs/mdx`
 - **Plate.js** - Rich text editor with AI capabilities
+- **@ai-sdk/google** - Google AI integration for editor AI features
 - **Cloudflare** - Deployment adapter for Cloudflare Pages
 
 ### Project Structure
@@ -68,6 +69,12 @@ public/               # Static assets served at root
 - Use for: FAQ accordions, modals, tabs, comparison tables
 - Require `client:*` directives when imported into `.astro` files
 - Common pattern: `import FAQ from '../components/FAQ'` then use as `<FAQ client:load />`
+
+### Import Path Aliases
+
+The project uses the `@/*` path alias for cleaner imports:
+- Configured in `tsconfig.json`: `"@/*": ["./src/*"]`
+- Use: `import { foo } from '@/components/foo'` instead of `'../../components/foo'`
 
 ### Custom Vite Plugins
 
@@ -131,3 +138,55 @@ The project includes a custom Vite plugin for development:
 **Pricing Tabs** (`PricingTabs.tsx`)
 - Monthly/annual billing toggle
 - Updates pricing display across the page
+
+## API Routes
+
+Server-side endpoints are defined in `src/pages/api/` using Astro's file-based routing:
+
+**Pattern:**
+- Export `POST`/`GET`/`PUT`/`DELETE` functions with `APIRoute` type
+- Set `export const prerender = false;` for SSR routes
+- Request body accessed via `await request.json()`
+- Return `Response` objects with appropriate status codes
+
+**Current routes:**
+- `/api/ai/command` - AI command endpoint using `@ai-sdk/google` for text generation
+- `/api/ai/copilot` - AI copilot endpoint for editor assistance using Google Gemini
+- `/api/uploadthing` - File upload integration with UploadThing
+
+## Plate.js Editor Architecture
+
+The rich text editor (`src/components/editor/`) is built on **Plate.js** with modular plugins:
+
+**Plugin Organization:**
+- `BaseEditorKit` - Core editor plugin bundle (`editor-base-kit.tsx`)
+- `plugins/` - Individual feature plugins (ai-kit, table-kit, markdown-kit, etc.)
+- Each plugin has `*-base-kit.tsx` (base configuration) and `*-kit.tsx` (full configuration)
+
+**Key Editor Features:**
+- AI-powered commands via `/api/ai/command` using Google Gemini (generate, edit, comment on content)
+- Table editing with multi-cell support
+- Markdown export/import
+- Comment/discussion system
+- Drag-and-drop blocks
+- File uploads via UploadThing
+
+**Editor State Management:**
+- Uses Plate's `SlateEditor` with plugin composition
+- Server-side editor instances created in API routes for AI processing
+- Client-side editor uses `usePlateEditor` hook
+- API routes use `@ai-sdk/google` with `createGoogleGenerativeAI()` for model instantiation
+
+## Content Collections
+
+Blog posts and content are managed via Astro Content Collections:
+
+**Configuration** (`src/content.config.ts`):
+- Posts defined with Zod schema for type-safe frontmatter
+- Files loaded from `content/posts/` directory (`.md` and `.mdx`)
+- Accessible via `astro.getCollection('posts')` in pages
+
+## Environment Variables
+
+Required environment variables (set in `.env` or deployment platform):
+- `GOOGLE_API_KEY` - Google AI API key for editor AI features (get one at https://ai.google.dev)
