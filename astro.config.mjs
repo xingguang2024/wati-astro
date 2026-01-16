@@ -1,18 +1,20 @@
-// @ts-check
 import { defineConfig } from "astro/config";
+import cloudflare from "@astrojs/cloudflare";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import { codeInspectorPlugin } from "code-inspector-plugin";
 import { codeJumpPlugin } from "./vite-plugins/code-jump-plugin.ts";
-
-import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
   vite: {
     plugins: [
       tailwindcss(),
+      codeInspectorPlugin({
+        bundler: "vite",
+      }),
       codeJumpPlugin({
         hotkey: "F2",
         editor: "cursor", // Note: need to configure the specific editor commands.
@@ -24,5 +26,6 @@ export default defineConfig({
   },
 
   integrations: [react(), mdx(), sitemap()],
+  output: "server",
   adapter: cloudflare(),
 });

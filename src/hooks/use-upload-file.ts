@@ -18,11 +18,13 @@ interface UseUploadFileProps
   > {
   onUploadComplete?: (file: UploadedFile) => void;
   onUploadError?: (error: unknown) => void;
+  useR2?: boolean; // Use R2 upload instead of UploadThing
 }
 
 export function useUploadFile({
   onUploadComplete,
   onUploadError,
+  useR2 = false,
   ...props
 }: UseUploadFileProps = {}) {
   const [uploadedFile, setUploadedFile] = React.useState<UploadedFile>();
@@ -30,24 +32,16 @@ export function useUploadFile({
   const [progress, setProgress] = React.useState<number>(0);
   const [isUploading, setIsUploading] = React.useState(false);
 
-  async function uploadThing(file: File) {
+  async function uploadFile(file: File) {
     setIsUploading(true);
     setUploadingFile(file);
 
     try {
-      const res = await uploadFiles("editorUploader", {
-        ...props,
-        files: [file],
-        onUploadProgress: ({ progress }) => {
-          setProgress(Math.min(progress, 100));
-        },
-      });
-
-      setUploadedFile(res[0]);
-
-      onUploadComplete?.(res[0]);
-
-      return uploadedFile;
+      if (useR2) {
+        return await uploadToR2(file);
+      } else {
+        return await uploadToUploadThing(file);
+      }
     } catch (error) {
       const errorMessage = getErrorMessage(error);
 
@@ -61,7 +55,6 @@ export function useUploadFile({
       onUploadError?.(error);
 
       // Mock upload for unauthenticated users
-      // toast.info('User not logged in. Mocking upload process.');
       const mockUploadedFile = {
         key: "mock-key-0",
         appUrl: `https://mock-app-url.com/${file.name}`,
@@ -72,13 +65,13 @@ export function useUploadFile({
       } as UploadedFile;
 
       // Simulate upload progress
-      let progress = 0;
+      let mockProgress = 0;
 
       const simulateProgress = async () => {
-        while (progress < 100) {
+        while (mockProgress < 100) {
           await new Promise((resolve) => setTimeout(resolve, 50));
-          progress += 2;
-          setProgress(Math.min(progress, 100));
+          mockProgress += 2;
+          setProgress(Math.min(mockProgress, 100));
         }
       };
 
@@ -94,11 +87,67 @@ export function useUploadFile({
     }
   }
 
+  async function uploadToR2(file: File): Promise<UploadedFile> {
+    // Simulate progress for better UX
+    let currentProgress = 0;
+    const progressInterval = setInterval(() => {
+      currentProgress += 10;
+      if (currentProgress <= 90) {
+        setProgress(currentProgress);
+      }
+    }, 100);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    clearInterval(progressInterval);
+    setProgress(100);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Upload failed');
+    }
+
+    const result = await response.json();
+    const uploadedFileData: UploadedFile = {
+      key: result.file.key,
+      appUrl: result.file.url,
+      url: result.file.url,
+      name: result.file.name,
+      size: result.file.size,
+    } as UploadedFile;
+
+    setUploadedFile(uploadedFileData);
+    onUploadComplete?.(uploadedFileData);
+
+    return uploadedFileData;
+  }
+
+  async function uploadToUploadThing(file: File): Promise<UploadedFile> {
+    const res = await uploadFiles("editorUploader", {
+      ...props,
+      files: [file],
+      onUploadProgress: ({ progress: uploadProgress }) => {
+        setProgress(Math.min(uploadProgress, 100));
+      },
+    });
+
+    setUploadedFile(res[0]);
+    onUploadComplete?.(res[0]);
+
+    return res[0];
+  }
+
   return {
     isUploading,
     progress,
     uploadedFile,
-    uploadFile: uploadThing,
+    uploadFile,
     uploadingFile,
   };
 }

@@ -14,9 +14,7 @@ import { useFilePicker } from 'use-file-picker';
 import type { TPlaceholderElement } from 'platejs';
 import type { PlateElementProps } from 'platejs/react';
 
-import { useUploadFile } from '@/hooks/use-upload-file';
 import { cn } from '@/lib/utils';
-import { useUploadContext } from '@/components/editor/upload-provider';
 
 const CONTENT: Record<
   string,
@@ -48,16 +46,28 @@ const CONTENT: Record<
   },
 };
 
-export const PlaceholderElement = withHOC(
+interface UploadFunctionProps {
+  uploadFile: (file: File) => Promise<string | undefined>;
+}
+
+interface PlaceholderElementR2Props extends PlateElementProps<TPlaceholderElement> {
+  uploadFunction: UploadFunctionProps['uploadFile'];
+}
+
+export const PlaceholderElementR2 = withHOC(
   PlaceholderProvider,
-  function PlaceholderElement(props: PlateElementProps<TPlaceholderElement>) {
+  function PlaceholderElementR2({
+    uploadFunction,
+    ...props
+  }: PlaceholderElementR2Props) {
     const { editor, element } = props;
 
     const { api } = useEditorPlugin(PlaceholderPlugin);
-    const { useR2 } = useUploadContext();
 
-    const { isUploading, progress, uploadedFile, uploadFile, uploadingFile } =
-      useUploadFile({ useR2 });
+    const [isUploading, setIsUploading] = React.useState(false);
+    const [progress, setProgress] = React.useState<number>(0);
+    const [uploadingFile, setUploadingFile] = React.useState<File>();
+    const [uploadedUrl, setUploadedUrl] = React.useState<string>();
 
     const loading = isUploading && uploadingFile;
 
@@ -83,15 +93,37 @@ export const PlaceholderElement = withHOC(
     });
 
     const replaceCurrentPlaceholder = React.useCallback(
-      (file: File) => {
-        void uploadFile(file);
+      async (file: File) => {
+        setIsUploading(true);
+        setUploadingFile(file);
         api.placeholder.addUploadingFile(element.id as string, file);
+
+        // Simulate progress
+        let currentProgress = 0;
+        const progressInterval = setInterval(() => {
+          currentProgress += 10;
+          if (currentProgress <= 90) {
+            setProgress(currentProgress);
+          }
+        }, 100);
+
+        try {
+          const url = await uploadFunction(file);
+          clearInterval(progressInterval);
+          setProgress(100);
+          setUploadedUrl(url);
+        } catch (error) {
+          clearInterval(progressInterval);
+          console.error('Upload failed:', error);
+          setIsUploading(false);
+          setUploadingFile(undefined);
+        }
       },
-      [api.placeholder, element.id, uploadFile]
+      [api.placeholder, element.id, uploadFunction]
     );
 
     React.useEffect(() => {
-      if (!uploadedFile) return;
+      if (!uploadedUrl) return;
 
       const path = editor.api.findPath(element);
 
@@ -103,11 +135,10 @@ export const PlaceholderElement = withHOC(
           initialHeight: imageRef.current?.height,
           initialWidth: imageRef.current?.width,
           isUpload: true,
-          name: element.mediaType === KEYS.file ? uploadedFile.name : '',
+          name: element.mediaType === KEYS.file ? uploadingFile?.name || '' : '',
           placeholderId: element.id as string,
           type: element.mediaType!,
-          // Use appUrl with fallback to url (both deprecated in uploadthing types but still work)
-          url: (uploadedFile as { appUrl?: string }).appUrl || (uploadedFile as { url?: string }).url || '',
+          url: uploadedUrl,
         };
 
         editor.tf.insertNodes(node, { at: path });
@@ -116,8 +147,11 @@ export const PlaceholderElement = withHOC(
       });
 
       api.placeholder.removeUploadingFile(element.id as string);
+      setIsUploading(false);
+      setUploadingFile(undefined);
+      setUploadedUrl(undefined);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [uploadedFile, element.id]);
+    }, [uploadedUrl, element.id]);
 
     // React dev mode will call React.useEffect twice
     const isReplaced = React.useRef(false);
@@ -172,7 +206,7 @@ export const PlaceholderElement = withHOC(
 
         {isImage && loading && (
           <ImageProgress
-            file={uploadingFile}
+            file={uploadingFile!}
             imageRef={imageRef}
             progress={progress}
           />

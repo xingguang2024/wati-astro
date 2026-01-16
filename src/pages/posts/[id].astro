@@ -1,11 +1,11 @@
 ---
-import { getCollection, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import "../../styles/markdown.css";
+import { getCollection, render } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import "@/styles/markdown.css";
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
-  return posts.map(post => ({
+  const posts = await getCollection("posts");
+  return posts.map((post) => ({
     params: { id: post.id },
     props: { post },
   }));
@@ -19,9 +19,21 @@ const { Content } = await render(post);
   <div class="min-h-screen bg-gradient-to-b from-zinc-50 to-white py-16">
     <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Back to posts -->
-      <a href="/posts" class="inline-flex items-center text-zinc-600 hover:text-zinc-900 my-8 transition-colors">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      <a
+        href="/posts"
+        class="inline-flex items-center text-zinc-600 hover:text-zinc-900 my-8 transition-colors"
+      >
+        <svg
+          class="w-5 h-5 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
         </svg>
         Back to posts
       </a>
@@ -31,40 +43,58 @@ const { Content } = await render(post);
         <h1 class="text-5xl font-bold text-zinc-900 mb-6 leading-tight">
           {post.data.title}
         </h1>
-        {post.data.description && (
-          <p class="text-xl text-zinc-600 mb-6 max-w-3xl">
-            {post.data.description}
-          </p>
-        )}
-        {post.data.updatedDate && (
-          <div class="flex items-center text-zinc-500">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <time datetime={post.data.updatedDate.toISOString()}>
-              {post.data.updatedDate.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </time>
-          </div>
-        )}
+        {
+          post.data.description && (
+            <p class="text-xl text-zinc-600 mb-6 max-w-3xl">
+              {post.data.description}
+            </p>
+          )
+        }
+        {
+          post.data.updatedDate && (
+            <div class="flex items-center text-zinc-500">
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <time datetime={post.data.updatedDate.toISOString()}>
+                {post.data.updatedDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
+            </div>
+          )
+        }
       </header>
 
       <!-- Hero Image -->
-      {post.data.heroImage && (
-        <div class="mb-12 -mx-4 sm:mx-0">
-          <img
-            src={post.data.heroImage}
-            alt={post.data.title}
-            class="w-full h-64 sm:h-96 object-cover rounded-2xl shadow-2xl"
-          />
-        </div>
-      )}
+      {
+        post.data.heroImage && (
+          <div class="mb-12 -mx-4 sm:mx-0">
+            <img
+              src={post.data.heroImage}
+              alt={post.data.title}
+              class="w-full h-64 sm:h-96 object-cover rounded-2xl shadow-2xl"
+            />
+          </div>
+        )
+      }
 
       <!-- Article Content -->
-      <div class="prose prose-lg max-w-none bg-white rounded-2xl shadow-sm p-8 sm:p-12">
+      <div
+        class="prose prose-lg max-w-none bg-white rounded-2xl shadow-sm p-8 sm:p-12"
+      >
         <Content />
       </div>
     </article>

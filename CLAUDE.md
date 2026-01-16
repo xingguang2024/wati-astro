@@ -131,3 +131,53 @@ The project includes a custom Vite plugin for development:
 **Pricing Tabs** (`PricingTabs.tsx`)
 - Monthly/annual billing toggle
 - Updates pricing display across the page
+
+### API Routes
+
+Server-side endpoints in `src/pages/api/` use Astro's file-based routing:
+
+- **`/api/ai/command`** - AI command endpoint for editor operations (generate, edit, comment)
+- **`/api/ai/copilot`** - AI copilot endpoint
+- **`/api/uploadthing`** - File upload integration via Uploadthing
+
+**Important**: All API routes must set `export const prerender = false;` to enable server-side execution on Cloudflare Pages.
+
+### Content Collections
+
+Blog posts and MDX content are managed through Astro Content Collections:
+
+- **Collection**: `posts` located in `content/posts/`
+- **Config**: Defined in `src/content.config.ts`
+- **Schema**: Validates frontmatter with `title`, `description`, `updatedDate`, `heroImage`
+- **Query**: Use `await getCollection('posts')` in Astro pages
+
+### Path Aliases
+
+The `@/*` path alias is configured in `tsconfig.json`:
+- Import from `@/components/Header.astro` instead of `../../components/Header.astro`
+- Resolves to `src/*` directory
+
+### Plate Editor Architecture
+
+The rich text editor (`src/components/PlateEditor.tsx`) is built on Plate.js with a modular plugin architecture:
+
+**Plugin Kits** (`src/components/editor/plugins/`):
+- **Base kits**: `editor-base-kit.tsx`, `basic-nodes-kit.tsx`, `basic-marks-kit.tsx`
+- **Feature kits**: `ai-kit.tsx`, `copilot-kit.tsx`, `comment-kit.tsx`, `table-kit.tsx`
+- **UI kits**: `fixed-toolbar-kit.tsx`, `floating-toolbar-kit.tsx`, `slash-kit.tsx`
+- **Advanced**: `dnd-kit.tsx` (drag-drop), `font-kit.tsx`, `align-kit.tsx`, `indent-kit.tsx`
+
+**Kit Pattern**:
+- `*-base-kit.tsx` files provide base implementations
+- `*-kit.tsx` files wrap with additional UI/functionality
+- Import from `@platejs/` packages for core plugins
+
+**AI Integration**:
+- Commands handled by `src/lib/command/prompt/` utilities
+- Gateway provider supports multiple models (OpenAI, Gemini)
+- Streaming responses via AI SDK (`ai` package)
+
+### Utility Functions
+
+- **`cn()`** (`src/utils/index.ts`): Merges Tailwind classes using `clsx` + `tailwind-merge`
+- Use for conditional class composition: `cn("base-class", isActive && "active-class")`
