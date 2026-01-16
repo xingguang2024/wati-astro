@@ -25,4 +25,5 @@ export default defineConfig({
 
   integrations: [react(), mdx(), sitemap()],
   adapter: cloudflare(),
+  output: "server"
 });
