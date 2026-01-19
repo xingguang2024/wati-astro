@@ -33,5 +33,4 @@ export default defineConfig({
   integrations: [react(), mdx(), sitemap()],
   output: "server",
   adapter: cloudflare(),
-  output: "server"
 });

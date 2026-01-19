@@ -3,7 +3,6 @@ import type { APIRoute } from "astro";
 import { AuthService } from "@/lib/auth";
 import { SessionCache } from "@/lib/session-cache";
 
-
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -16,11 +15,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     await SessionCache.invalidateSession(kv, token);
   }
 
-  const response = new Response(
+  return new Response(
     JSON.stringify({ message: "Logged out successfully" }),
-    { status: 200, headers: { "Content-Type": "application/json" } }
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Set-Cookie": AuthService.getClearAuthCookie(),
+      },
+    },
   );
-
-  AuthService.clearAuthCookie(response);
-  return response;
 };

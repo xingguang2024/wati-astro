@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 
 import { EditorKit } from '@/components/editor/editor-kit';
 import { SettingsDialog } from '@/components/editor/settings-dialog';
+import { UploadProvider } from '@/components/editor/upload-provider';
 import { Editor, EditorContainer } from '@/components/ui/editor';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { UploadProvider } from '@/components/editor/upload-provider';
 
 interface PlateEditorProps {
   documentId?: string;

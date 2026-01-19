@@ -6,12 +6,13 @@ import type { APIRoute } from "astro";
 import { users } from "@/db/schema";
 import { AuthService } from "@/lib/auth";
 
-
-
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  username: z.string().min(3).regex(/^[a-zA-Z0-9_-]+$/),
+  username: z
+    .string()
+    .min(3)
+    .regex(/^[a-zA-Z0-9_-]+$/),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
 });
@@ -29,7 +30,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           error: "Validation failed",
           details: validation.error.issues,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       );
     }
 
@@ -40,7 +41,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const existing = await db
       .select()
       .from(users)
-      .where(or(eq(users.email, email.toLowerCase()), eq(users.username, username)))
+      .where(
+        or(eq(users.email, email.toLowerCase()), eq(users.username, username)),
+      )
       .limit(1);
 
     if (existing.length > 0) {
@@ -72,19 +75,29 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const token = await AuthService.generateToken(
       userId,
       email.toLowerCase(),
-      "viewer"
+      "viewer",
     );
 
-    const response = new Response(
+    return new Response(
       JSON.stringify({
-        user: { id: userId, email, username, firstName, lastName, role: "viewer" },
+        user: {
+          id: userId,
+          email,
+          username,
+          firstName,
+          lastName,
+          role: "viewer",
+        },
         token,
       }),
-      { status: 201, headers: { "Content-Type": "application/json" } }
+      {
+        status: 201,
+        headers: {
+          "Content-Type": "application/json",
+          "Set-Cookie": AuthService.getAuthCookie(token),
+        },
+      },
     );
-
-    AuthService.setAuthCookie(response, token);
-    return response;
   } catch (error) {
     console.error("Registration error:", error);
     return new Response(JSON.stringify({ error: "Registration failed" }), {

@@ -117,6 +117,26 @@ const description = 'Manage and edit your blogs';
     blogs: Blog[];
   }
 
+  // Authenticated fetch function
+  async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+    const token = localStorage.getItem('auth_token');
+
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    // Add Authorization header if token exists
+    if (token) {
+      (headers as any)['Authorization'] = `Bearer ${token}`;
+    }
+
+    return fetch(url, {
+      ...options,
+      headers,
+    });
+  }
+
   // DOM elements
   const loadingState = document.getElementById('loadingState');
   const errorState = document.getElementById('errorState');
@@ -241,7 +261,7 @@ const description = 'Manage and edit your blogs';
         ? '/api/blogs'
         : `/api/blogs?status=${status}`;
 
-      const response = await fetch(url);
+      const response = await authFetch(url);
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -268,7 +288,7 @@ const description = 'Manage and edit your blogs';
   // Delete blog
   async function deleteBlog(blogId: string): Promise<void> {
     try {
-      const response = await fetch(`/api/blogs/${blogId}`, {
+      const response = await authFetch(`/api/blogs/${blogId}`, {
         method: 'DELETE',
       });
 
@@ -315,8 +335,14 @@ const description = 'Manage and edit your blogs';
   createFirstBlogBtn?.addEventListener('click', createNewBlog);
   retryBtn?.addEventListener('click', () => fetchBlogs(currentStatus));
 
-  // Initial fetch
-  fetchBlogs();
+  // Check authentication on page load
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = '/login';
+  } else {
+    // Initial fetch
+    fetchBlogs();
+  }
 </script>
 
 <style>

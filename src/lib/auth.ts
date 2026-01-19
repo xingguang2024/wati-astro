@@ -58,9 +58,10 @@ export class AuthService {
       encoder.encode(data)
     )
 
-    const signatureB64 = this.base64UrlEncode(
-      String.fromCharCode(...new Uint8Array(signature))
-    )
+    // Convert ArrayBuffer to base64 directly without string conversion
+    const signatureArray = new Uint8Array(signature)
+    const binaryString = Array.from(signatureArray, byte => String.fromCharCode(byte)).join('')
+    const signatureB64 = this.base64UrlEncode(binaryString)
 
     return `${data}.${signatureB64}`
   }
@@ -85,8 +86,13 @@ export class AuthService {
         ['verify']
       )
 
+      // Decode signature and convert back to ArrayBuffer
       const signatureString = this.base64UrlDecode(signatureB64)
-      const signatureBuffer = encoder.encode(signatureString)
+      const signatureArray = new Uint8Array(
+        [...signatureString].map(c => c.charCodeAt(0))
+      )
+      const signatureBuffer = signatureArray.buffer
+
       const isValid = await crypto.subtle.verify(
         'HMAC',
         key,
@@ -108,20 +114,14 @@ export class AuthService {
     }
   }
 
-  // Set auth cookie
-  static setAuthCookie(response: Response, token: string): void {
-    const headers = new Headers(response.headers)
-    headers.append('Set-Cookie',
-      `auth_token=${token}; HttpOnly; Secure; SameSite=Lax; Max-Age=86400; Path=/`
-    )
+  // Get auth cookie string
+  static getAuthCookie(token: string): string {
+    return `auth_token=${token}; HttpOnly; Secure; SameSite=Lax; Max-Age=86400; Path=/`
   }
 
-  // Clear auth cookie
-  static clearAuthCookie(response: Response): void {
-    const headers = new Headers(response.headers)
-    headers.append('Set-Cookie',
-      `auth_token=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/`
-    )
+  // Get clear auth cookie string
+  static getClearAuthCookie(): string {
+    return `auth_token=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/`
   }
 
   // Extract token from request

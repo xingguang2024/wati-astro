@@ -7,27 +7,27 @@
  * Requires authentication via JWT token.
  */
 
-import type { APIRoute } from 'astro';
+import type { APIRoute } from "astro";
 
-import { AuthService } from '@/lib/auth';
-import { uploadFile } from '@/lib/r2';
+import { AuthService } from "@/lib/auth";
+import { uploadFile } from "@/lib/r2";
 
 export const prerender = false;
 
 const ALLOWED_TYPES = [
   // Images
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/svg+xml',
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
   // Documents
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'text/plain',
-  'text/markdown',
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "text/plain",
+  "text/markdown",
 ];
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
@@ -40,11 +40,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     if (!payload) {
       return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
+        JSON.stringify({ error: "Authentication required" }),
         {
           status: 401,
-          headers: { 'Content-Type': 'application/json' },
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -52,22 +52,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const r2 = (locals as any).r2;
     if (!r2) {
       return new Response(
-        JSON.stringify({ error: 'R2 storage not available' }),
+        JSON.stringify({ error: "R2 storage not available" }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
     // Parse multipart form data
     const formData = await request.formData();
-    const file = formData.get('file') as File | null;
+    const file = formData.get("file") as File | null;
 
     if (!file) {
-      return new Response(JSON.stringify({ error: 'No file provided' }), {
+      return new Response(JSON.stringify({ error: "No file provided" }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -93,14 +93,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
       {
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           // Cache control for uploaded files
-          'Cache-Control': 'public, max-age=31536000, immutable',
+          "Cache-Control": "public, max-age=31536000, immutable",
         },
-      }
+      },
     );
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error("Upload error:", error);
 
     // Handle validation errors
     if (error instanceof Error) {
@@ -110,19 +110,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
     // Handle unexpected errors
-    return new Response(
-      JSON.stringify({ error: 'Failed to upload file' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ error: "Failed to upload file" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
 
@@ -131,8 +128,8 @@ export const OPTIONS: APIRoute = async () => {
   return new Response(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   });
 };

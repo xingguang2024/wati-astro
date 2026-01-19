@@ -39,8 +39,9 @@ try {
     // Check role-based permissions
     const userRole: UserRole = payload.role as UserRole;
     const allowedRoles: UserRole[] = ['admin', 'editor'];
+    const isSuperAdmin = payload.userId === 'super-admin';
 
-    if (!allowedRoles.includes(userRole)) {
+    if (!allowedRoles.includes(userRole) && !isSuperAdmin) {
       forbidden = true;
     } else {
       const db = (Astro.locals as any).db;
@@ -48,10 +49,16 @@ try {
         throw new Error('Database not available');
       }
 
+      // Super admin can edit any blog, regular users can only edit their own
       const blogsData = await db
         .select()
         .from(blogs)
-        .where(and(eq(blogs.id, id), eq(blogs.userId, payload.userId)))
+        .where(
+          and(
+            eq(blogs.id, id),
+            isSuperAdmin ? undefined : eq(blogs.userId, payload.userId)
+          )
+        )
         .limit(1);
 
       if (blogsData.length === 0) {

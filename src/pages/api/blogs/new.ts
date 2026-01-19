@@ -1,15 +1,9 @@
----
-/**
- * Create New Blog Page
- *
- * Creates a new blog and redirects to the edit page.
- * This is a server-side redirect wrapper for blog creation.
- */
-
-import { AuthService } from '@/lib/auth';
-import { blogs } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
 import type { APIContext } from 'astro';
+
+import { blogs } from '@/db/schema';
+import { AuthService } from '@/lib/auth';
 
 export const prerender = false;
 

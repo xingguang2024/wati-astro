@@ -51,7 +51,12 @@ import Layout from '../layouts/Layout.astro';
           throw new Error(result.error || 'Login failed');
         }
 
-        window.location.href = '/documents';
+        // Store token for API requests
+        localStorage.setItem('auth_token', result.token);
+        localStorage.setItem('user', JSON.stringify(result.user));
+
+        // Redirect to dashboard
+        window.location.href = '/dashboard';
       } catch (err: any) {
         errorDiv.textContent = err.message;
         errorDiv.classList.remove('hidden');

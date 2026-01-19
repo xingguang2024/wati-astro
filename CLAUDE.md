@@ -13,6 +13,10 @@ bun install
 bun run dev
 # or: npm run dev
 
+# Start development server with local Cloudflare emulation
+bun run dev:cf
+# Requires wrangler.toml configuration
+
 # Build for production
 bun run build
 # or: npm run build
@@ -40,20 +44,20 @@ bun run lint:fix
 - **MDX** - Markdown + JSX support via `@astrojs/mdx`
 - **Plate.js** - Rich text editor with AI capabilities
 - **@ai-sdk/google** - Google AI integration for editor AI features
-- **Cloudflare** - Deployment adapter for Cloudflare Pages
+- **Cloudflare** - Deployment adapter for Cloudflare Pages with D1, KV, and R2
 
 ### Project Structure
 ```
 src/
 ├── components/        # React (.tsx) and Astro (.astro) components
-├── layouts/          # Page layouts (Layout.astro)
-├── pages/            # File-based routing (.astro files)
+├── layouts/          # Page layouts (Layout.astro, LayoutNoHeader.astro)
+├── pages/            # File-based routing (.astro files for pages, /api/ for endpoints)
+├── lib/              # Utilities (auth.ts, command prompts, etc.)
+├── db/               # Database schema and client (Drizzle ORM)
 ├── styles/           # Global CSS
-├── utils/            # Utility functions
-├── assets/           # Static assets
-└── content.config.ts # Astro content collections config
+└── utils/            # Utility functions
 
-content/posts/        # Blog posts
+content/posts/        # Blog posts (Astro Content Collections)
 vite-plugins/         # Custom Vite plugins (code-jump-plugin)
 public/               # Static assets served at root
 ```
@@ -78,22 +82,16 @@ The project uses the `@/*` path alias for cleaner imports:
 
 ### Custom Vite Plugins
 
-The project includes a custom Vite plugin for development:
-
 **code-jump-plugin** (`vite-plugins/code-jump-plugin.ts`)
 - Adds F2 hotkey to jump from browser to editor
 - Requires manual editor configuration in `astro.config.mjs`
 - Validates editor availability on startup with graceful degradation
-- Supports many editors: Cursor, VS Code, Neovim, Vim, JetBrains IDEs, etc.
-- Provides installation guidance if configured editor is missing
 
 ### Styling
 
 - **Tailwind CSS 4.x** via Vite plugin (not PostCSS)
 - **DaisyUI** provides pre-built component classes
 - **Font**: DM Sans (configured in `tailwind.config.mjs`)
-- Use utility classes directly in components
-- DaisyUI themes configured in `tailwind.config.mjs`
 
 ### TypeScript & ESLint Configuration
 
@@ -105,66 +103,109 @@ The project includes a custom Vite plugin for development:
 **ESLint:**
 - Configured in `eslint.config.js` (flat config format)
 - `.astro` files excluded from linting (handled separately by Astro)
-- Import ordering enforced with `eslint-plugin-import`
-- React hooks rules enforced
 
 ### Deployment
 
 - **Adapter**: Cloudflare Pages (`@astrojs/cloudflare`)
 - Build output: `dist/` directory
+- **Runtime**: Access to D1 database, KV storage, R2 object storage via `App.Locals`
 
-### Pages
+## Cloudflare Services Integration
 
+### Database (D1)
+
+**Schema** (`src/db/schema/index.ts`):
+- `users` - User accounts with email, username, password hash, roles
+- `blogs` - Blog posts with Plate editor content (JSON), status, cover images
+- `sessions` - Session tokens for auth
+
+**Client** (`src/db/index.ts`):
+- Uses Drizzle ORM with D1 adapter
+- `createDB(d1)` creates a database client
+- Access via `locals.db` in API routes and pages
+
+### Storage (R2)
+
+File upload integration via UploadThing:
+- Configuration in `src/pages/api/uploadthing/route.ts`
+- Files stored in R2 bucket, accessible via `locals.r2`
+
+### KV Storage
+
+Accessible via `locals.kv` for caching and session storage.
+
+### Authentication System
+
+**AuthService** (`src/lib/auth.ts`):
+- JWT-based auth using Web Crypto API (no external dependencies)
+- Password hashing with SHA-256 + salt
+- Token verification and cookie management
+- Supports both `Authorization: Bearer` header and cookie-based auth
+
+**Auth API Routes** (`src/pages/api/auth/`):
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/me` - Get current user
+
+**Protected Routes Pattern:**
+```typescript
+const token = AuthService.extractToken(request);
+if (!token) return new Response('Unauthorized', { status: 401 });
+const payload = await AuthService.verifyToken(token);
+if (!payload) return new Response('Invalid token', { status: 401 });
+```
+
+## Pages Overview
+
+### Marketing Pages
 - **index.astro** - Homepage
-- **editor.astro** - Blog editor page with AI-powered rich text editing
 - **astra.astro** - Astra AI Agent landing page
-- **pricing.astro** - Pricing page with interactive tabs and comparison tables
+- **new-astra.astro** - New Astra landing page variant
+- **pricing.astro** - Pricing page with interactive tabs
 
-### Common Interactive Patterns
+### Blog/CMS Pages
+- **blogs.astro** - Public blog listing (fetches from WordPress API)
+- **dashboard.astro** - CMS dashboard for managing user's blogs
+- **/blogs/new** - Create new blog post
+- **/blogs/[id]/edit** - Edit existing blog post
+- **/blogs/[id]** - View published blog post
+- **login.astro** - User login page
+- **register.astro** - User registration page
 
-**FAQ Component** (`FAQ.tsx`)
-- Collapsible accordion with state management
-- Used in landing pages for Q&A sections
+### Editor
+- **editor.astro** - Standalone rich text editor with AI features
 
-**Comparison Table** (`ComparisonTable.tsx`, `PricingComparisonTable.tsx`)
-- Desktop: Table view
-- Mobile: Tab-based switching
-- Responsive pattern for feature comparisons
+### Legacy Content Pages
+- **/posts/** - Astro Content Collections pages
 
-**Modal Components** (`BookDemoModal.tsx`, `CalendlyModal.tsx`)
-- Form popups with HubSpot/Calendly integration
-- DaisyUI modal classes
-
-**Pricing Tabs** (`PricingTabs.tsx`)
-- Monthly/annual billing toggle
-- Updates pricing display across the page
-
-### API Routes
+## API Routes
 
 Server-side endpoints in `src/pages/api/` use Astro's file-based routing:
 
-- **`/api/ai/command`** - AI command endpoint for editor operations (generate, edit, comment)
-- **`/api/ai/copilot`** - AI copilot endpoint
-- **`/api/uploadthing`** - File upload integration via Uploadthing
-
 **Important**: All API routes must set `export const prerender = false;` to enable server-side execution on Cloudflare Pages.
 
-### Content Collections
+### AI Endpoints
+- **`/api/ai/command`** - AI command endpoint for editor operations (generate, edit, comment)
+- **`/api/ai/copilot`** - AI copilot endpoint for editor assistance
 
-Blog posts and MDX content are managed through Astro Content Collections:
+### CMS Endpoints
+- **`GET /api/blogs`** - List current user's blogs (supports `?status=` filter)
+- **`POST /api/blogs`** - Create new blog
+- **`GET /api/blogs/[id]`** - Get single blog
+- **`PUT /api/blogs/[id]`** - Update blog
+- **`DELETE /api/blogs/[id]`** - Delete blog
 
-- **Collection**: `posts` located in `content/posts/`
-- **Config**: Defined in `src/content.config.ts`
-- **Schema**: Validates frontmatter with `title`, `description`, `updatedDate`, `heroImage`
-- **Query**: Use `await getCollection('posts')` in Astro pages
+### Upload Endpoints
+- **`/api/uploadthing`** - UploadThing integration
+- **`/api/upload`** - Direct file upload to R2
+- **`/api/upload/[key]`** - Get uploaded file by key
 
-### Path Aliases
+### Admin Endpoints
+- **`POST /api/seed-admin`** - Create super admin account from environment variables
+- **`GET /api/seed-admin`** - Check if admin account exists
 
-The `@/*` path alias is configured in `tsconfig.json`:
-- Import from `@/components/Header.astro` instead of `../../components/Header.astro`
-- Resolves to `src/*` directory
-
-### Plate Editor Architecture
+## Plate Editor Architecture
 
 The rich text editor (`src/components/PlateEditor.tsx`) is built on Plate.js with a modular plugin architecture:
 
@@ -184,12 +225,43 @@ The rich text editor (`src/components/PlateEditor.tsx`) is built on Plate.js wit
 - Gateway provider supports multiple models (OpenAI, Gemini)
 - Streaming responses via AI SDK (`ai` package)
 
-### Utility Functions
+## Utility Functions
 
 - **`cn()`** (`src/utils/index.ts`): Merges Tailwind classes using `clsx` + `tailwind-merge`
 - Use for conditional class composition: `cn("base-class", isActive && "active-class")`
 
-### Environment Variables
+## Environment Variables
 
 Required environment variables (set in `.env` or deployment platform):
+- `JWT_SECRET` - Secret for JWT token signing
+- `AI_GATEWAY_API_KEY` - API gateway key for AI features
+- `OPENAI_API_KEY` - OpenAI API key (optional, for alternative AI provider)
 - `GOOGLE_API_KEY` - Google AI API key for editor AI features (get one at https://ai.google.dev)
+
+### Super Admin Account
+
+Optional environment variables for creating the initial admin account:
+- `ADMIN_EMAIL` - Admin email address
+- `ADMIN_PASSWORD` - Admin password (use a strong password!)
+- `ADMIN_USERNAME` - Admin username (default: "admin")
+- `ADMIN_FIRST_NAME` - Admin first name (default: "Admin")
+- `ADMIN_LAST_NAME` - Admin last name (default: "User")
+
+**After deployment**, create the admin account by calling:
+```bash
+curl -X POST https://your-domain.com/api/seed-admin
+```
+
+Or check if admin exists:
+```bash
+curl https://your-domain.com/api/seed-admin
+```
+
+## Cloudflare Pages Deployment
+
+The project uses `@astrojs/cloudflare` adapter. Configure bindings in Cloudflare Pages dashboard:
+- **D1 Database**: Bind as `DB`
+- **KV Namespace**: Bind as `KV`
+- **R2 Bucket**: Bind as `R2`
+
+Access these via `locals.db`, `locals.kv`, `locals.r2` in API routes.

@@ -13,6 +13,13 @@ interface ImportMetaEnv {
   readonly AI_GATEWAY_API_KEY?: string;
   readonly OPENAI_API_KEY?: string;
   readonly GOOGLE_API_KEY?: string;
+
+  // Super Admin Account (auto-created on first deploy)
+  readonly ADMIN_EMAIL?: string;
+  readonly ADMIN_PASSWORD?: string;
+  readonly ADMIN_USERNAME?: string;
+  readonly ADMIN_FIRST_NAME?: string;
+  readonly ADMIN_LAST_NAME?: string;
 }
 
 interface ImportMeta {

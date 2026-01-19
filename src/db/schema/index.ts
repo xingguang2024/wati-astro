@@ -20,7 +20,6 @@ export const users = sqliteTable("users", {
 export const blogs = sqliteTable("blogs", {
   id: text("id").primaryKey(),
   userId: text("user_id")
-    .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
