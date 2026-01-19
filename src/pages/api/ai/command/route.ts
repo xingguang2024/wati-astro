@@ -1,4 +1,4 @@
-import { createGateway } from "@ai-sdk/gateway";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import {
   type LanguageModel,
   type UIMessageStreamWriter,
@@ -29,10 +29,10 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   const {
-    apiKey: key,
+    apiKey,
     ctx,
     messages: messagesRaw,
-    model,
+    model: modelName = "gemini-2.5-flash",
   } = await request.json();
 
   const { children, selection, toolName: toolNameParam } = ctx;
@@ -43,18 +43,16 @@ export const POST: APIRoute = async ({ request }) => {
     value: children,
   });
 
-  const apiKey = key || import.meta.env.AI_GATEWAY_API_KEY;
-
   if (!apiKey) {
     return new Response(
-      JSON.stringify({ error: "Missing AI Gateway API key." }),
+      JSON.stringify({ error: "Missing Google API key." }),
       { status: 401, headers: { "Content-Type": "application/json" } },
     );
   }
 
   const isSelecting = editor.api.isExpanded();
 
-  const gatewayProvider = createGateway({
+  const google = createGoogleGenerativeAI({
     apiKey,
   });
 
@@ -72,10 +70,10 @@ export const POST: APIRoute = async ({ request }) => {
           const enumOptions = isSelecting
             ? ["generate", "edit", "comment"]
             : ["generate", "comment"];
-          const modelId = model || "google/gemini-2.5-flash";
+          const modelId = modelName || "gemini-2.5-flash";
 
           const { output: AIToolName } = (await generateText({
-            model: gatewayProvider(modelId),
+            model: google(modelId) as any,
             output: (Output as any).choice({ options: enumOptions }),
             prompt,
           } as any)) as any;
@@ -90,18 +88,18 @@ export const POST: APIRoute = async ({ request }) => {
 
         const stream = streamText({
           experimental_transform: markdownJoinerTransform(),
-          model: gatewayProvider(model || "openai/gpt-4o-mini"),
+          model: google(modelName || "gemini-2.5-flash") as any,
           // Not used
           prompt: "",
           tools: {
             comment: getCommentTool(editor, {
               messagesRaw,
-              model: gatewayProvider(model || "google/gemini-2.5-flash"),
+              model: google(modelName || "gemini-2.5-flash") as any,
               writer,
             }),
             table: getTableTool(editor, {
               messagesRaw,
-              model: gatewayProvider(model || "google/gemini-2.5-flash"),
+              model: google(modelName || "gemini-2.5-flash") as any,
               writer,
             }),
           },
@@ -133,8 +131,8 @@ export const POST: APIRoute = async ({ request }) => {
                 model:
                   editType === "selection"
                     ? //The selection task is more challenging, so we chose to use Gemini 2.5 Flash.
-                      gatewayProvider(model || "google/gemini-2.5-flash")
-                    : gatewayProvider(model || "openai/gpt-4o-mini"),
+                    google(modelName || "gemini-2.5-flash") as any
+                    : google(modelName || "gemini-2.5-flash") as any,
                 messages: [
                   {
                     content: editPrompt,
@@ -159,7 +157,7 @@ export const POST: APIRoute = async ({ request }) => {
                     role: "user",
                   },
                 ],
-                model: gatewayProvider(model || "openai/gpt-4o-mini"),
+                model: google(modelName || "gemini-2.5-flash") as any,
               };
             }
           },

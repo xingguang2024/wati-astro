@@ -1,3 +1,4 @@
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 
 import type { APIRoute } from "astro";
@@ -6,26 +7,28 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   const {
-    apiKey: key,
-    model = "gpt-4o-mini",
+    apiKey,
+    model = "gemini-2.5-flash",
     prompt,
     system,
   } = await request.json();
 
-  const apiKey = key || import.meta.env.AI_GATEWAY_API_KEY;
-
   if (!apiKey) {
     return new Response(
-      JSON.stringify({ error: "Missing ai gateway API key." }),
+      JSON.stringify({ error: "Missing Google API key." }),
       { status: 401, headers: { "Content-Type": "application/json" } },
     );
   }
 
   try {
+    const google = createGoogleGenerativeAI({
+      apiKey,
+    });
+
     const result = await generateText({
       abortSignal: request.signal,
       maxOutputTokens: 50,
-      model: `openai/${model}`,
+      model: google(model) as any,
       prompt,
       system,
       temperature: 0.7,

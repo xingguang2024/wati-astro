@@ -1,328 +1,247 @@
 ---
-/**
- * Blogs List Page
- *
- * Displays a list of user's blogs with filtering and actions.
- * Fetches blogs from /api/blogs endpoint.
- */
+import Layout from "../layouts/Layout.astro";
 
-import Layout from '../layouts/Layout.astro';
+const title = "AI Agent Blog | Wati";
+const description = "Latest insights, tutorials, and updates about AI Agents from the Wati team";
 
-const title = 'My Blogs - Wati';
-const description = 'Manage and edit your blogs';
+// Fetch ai-agent category ID first
+const CATEGORIES_API_URL = "https://watidev.wpengine.com/wp-json/wp/v2/categories?slug=ai-agent";
+
+export const prerender = false;
+
+interface Category {
+  id: number;
+  slug: string;
+  name: string;
+}
+
+// Get ai-agent category ID
+let aiAgentCategoryId: number | null = null;
+try {
+  const catResponse = await fetch(CATEGORIES_API_URL, {
+    headers: { Accept: "application/json" },
+  });
+  if (catResponse.ok) {
+    const categories: Category[] = await catResponse.json();
+    if (categories.length > 0) {
+      aiAgentCategoryId = categories[0].id;
+    }
+  }
+} catch (e) {
+  console.error("Failed to fetch categories:", e);
+}
+
+// Fetch posts from WordPress API filtered by ai-agent category
+const WP_API_URL = aiAgentCategoryId
+  ? `https://watidev.wpengine.com/wp-json/wp/v2/posts?categories=${aiAgentCategoryId}&per_page=12&_fields=id,date,title,link,content,excerpt,_embedded,_links`
+  : "https://watidev.wpengine.com/wp-json/wp/v2/posts?per_page=12&_fields=id,date,title,link,content,excerpt,_embedded,_links";
+
+interface Author {
+  id: number;
+  name: string;
+  url?: string;
+  description?: string;
+}
+
+interface Media {
+  source_url?: string;
+  alt_text?: string;
+  media_details?: {
+    width?: number;
+    height?: number;
+  };
+}
+
+interface Post {
+  id: number;
+  date: string;
+  title: { rendered: string };
+  link: string;
+  content: { rendered: string };
+  excerpt: { rendered: string };
+  _embedded?: {
+    author?: Author[];
+    "wp:featuredmedia"?: Media[];
+  };
+  _links?: {
+    self?: { href: string }[];
+  };
+}
+
+let posts: Post[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(WP_API_URL, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`WordPress API returned ${response.status}`);
+  }
+
+  posts = await response.json();
+  console.log("Fetched posts:", posts);
+} catch (e) {
+  console.error("Failed to fetch posts from WordPress:", e);
+  error = e instanceof Error ? e.message : "Failed to load posts";
+}
+
+// Format date
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+// Strip HTML from excerpt
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").trim();
+}
 ---
 
 <Layout title={title} description={description}>
-  <div class="min-h-screen bg-zinc-50 pt-20">
-    <div class="container mx-auto px-4 py-8">
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h1 class="text-3xl font-bold text-zinc-900">My Blogs</h1>
-          <p class="mt-2 text-zinc-600">Create and manage your content</p>
+  <section class="py-20 bg-gradient-to-b from-zinc-50 to-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h1 class="font-bold text-5xl md:text-6xl text-zinc-900 mb-6">
+          AI Agent Blog
+        </h1>
+        <p class="text-xl text-zinc-600 max-w-2xl mx-auto">
+          Latest insights, tutorials, and updates about AI Agents from the Wati team
+        </p>
+      </div>
+
+      {error ? (
+        <div class="max-w-2xl mx-auto text-center py-12">
+          <div class="bg-red-50 border border-red-200 rounded-xl p-8">
+            <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h2 class="text-xl font-semibold text-red-800 mb-2">Unable to Load Posts</h2>
+            <p class="text-red-600">{error}</p>
+            <p class="text-red-500 text-sm mt-4">Please try again later or contact support if the issue persists.</p>
+          </div>
         </div>
-        <button
-          id="createBlogBtn"
-          class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          New Blog
-        </button>
-      </div>
-
-      <!-- Status Filter -->
-      <div class="flex gap-2 mb-6">
-        <button
-          data-status="all"
-          class="status-filter-btn px-4 py-2 rounded-lg font-medium transition-colors bg-zinc-900 text-white"
-        >
-          All
-        </button>
-        <button
-          data-status="draft"
-          class="status-filter-btn px-4 py-2 rounded-lg font-medium transition-colors bg-white text-zinc-700 hover:bg-zinc-100"
-        >
-          Drafts
-        </button>
-        <button
-          data-status="published"
-          class="status-filter-btn px-4 py-2 rounded-lg font-medium transition-colors bg-white text-zinc-700 hover:bg-zinc-100"
-        >
-          Published
-        </button>
-      </div>
-
-      <!-- Loading State -->
-      <div id="loadingState" class="text-center py-12">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <p class="mt-4 text-zinc-600">Loading blogs...</p>
-      </div>
-
-      <!-- Error State -->
-      <div id="errorState" class="hidden text-center py-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+      ) : posts.length === 0 ? (
+        <div class="text-center py-12">
+          <div class="inline-block animate-pulse">
+            <svg class="w-16 h-16 text-zinc-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <p class="text-zinc-500 mt-4">Loading posts...</p>
         </div>
-        <h3 class="text-lg font-semibold text-zinc-900 mb-2">Failed to load blogs</h3>
-        <p id="errorMessage" class="text-zinc-600 mb-4"></p>
-        <button
-          id="retryBtn"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Try Again
-        </button>
-      </div>
+      ) : (
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {posts.map((post) => {
+            const featuredImage = post._embedded?.["wp:featuredmedia"]?.[0];
+            const author = post._embedded?.author?.[0];
+            const excerpt = stripHtml(post.excerpt.rendered);
 
-      <!-- Empty State -->
-      <div id="emptyState" class="hidden text-center py-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-zinc-100 mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+            return (
+              <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+                {/* Featured Image */}
+                <a
+                  href={`/blog/${post.id}`}
+                  class="block aspect-[16/10] overflow-hidden bg-zinc-100 relative"
+                >
+                  {featuredImage?.source_url ? (
+                    <img
+                      src={featuredImage.source_url}
+                      alt={featuredImage.alt_text || post.title.rendered}
+                      class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                      <svg class="w-16 h-16 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                    </div>
+                  )}
+                </a>
+
+                {/* Content */}
+                <div class="p-6 flex-1 flex flex-col">
+                  {/* Date */}
+                  <div class="flex items-center gap-3 mb-3">
+                    <time class="text-sm text-zinc-500" datetime={post.date}>
+                      {formatDate(post.date)}
+                    </time>
+                    {author && (
+                      <>
+                        <span class="text-zinc-300">•</span>
+                        <span class="text-sm text-zinc-500">{author.name}</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <a href={`/blog/${post.id}`} class="block mb-3">
+                    <h2 class="font-bold text-xl text-zinc-900 leading-snug hover:text-blue-600 transition-colors line-clamp-2">
+                      {post.title.rendered}
+                    </h2>
+                  </a>
+
+                  {/* Excerpt */}
+                  <p class="text-zinc-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
+                    {excerpt}
+                  </p>
+
+                  {/* Read More Link */}
+                  <a
+                    href={`/blog/${post.id}`}
+                    class="inline-flex items-center gap-2 text-blue-600 font-semibold text-sm hover:text-blue-700 transition-colors mt-auto"
+                  >
+                    Read More
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
+              </article>
+            );
+          })}
         </div>
-        <h3 class="text-lg font-semibold text-zinc-900 mb-2">No blogs yet</h3>
-        <p class="text-zinc-600 mb-4">Create your first blog to get started</p>
-        <button
-          id="createFirstBlogBtn"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Create Blog
-        </button>
-      </div>
+      )}
 
-      <!-- Blogs List -->
-      <div id="blogsList" class="hidden space-y-4">
-        <!-- Blogs will be rendered here by JavaScript -->
-      </div>
+      {/* Load More Button */}
+      {!error && posts.length > 0 && (
+        <div class="text-center mt-16">
+          <a
+            href="https://watidev.wpengine.com/blog/"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 bg-zinc-900 text-white font-semibold text-lg px-8 py-4 rounded-xl hover:bg-zinc-800 transition-all hover:shadow-lg hover:-translate-y-0.5"
+          >
+            View All Posts on WordPress
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
+      )}
     </div>
-  </div>
+  </section>
 </Layout>
-
-<script>
-  interface Blog {
-    id: string;
-    title: string;
-    slug: string;
-    status: 'draft' | 'published' | 'archived';
-    excerpt: string | null;
-    updatedAt: number;
-    createdAt: number;
-  }
-
-  interface BlogsResponse {
-    blogs: Blog[];
-  }
-
-  // DOM elements
-  const loadingState = document.getElementById('loadingState');
-  const errorState = document.getElementById('errorState');
-  const emptyState = document.getElementById('emptyState');
-  const blogsList = document.getElementById('blogsList');
-  const errorMessage = document.getElementById('errorMessage');
-  const createBlogBtn = document.getElementById('createBlogBtn');
-  const createFirstBlogBtn = document.getElementById('createFirstBlogBtn');
-  const retryBtn = document.getElementById('retryBtn');
-  const statusFilterBtns = document.querySelectorAll('.status-filter-btn');
-
-  let currentStatus: string = 'all';
-
-  // Format date
-  function formatDate(timestamp: number): string {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
-      return 'Today';
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-  }
-
-  // Get status badge class
-  function getStatusClass(status: string): string {
-    switch (status) {
-      case 'published':
-        return 'bg-green-100 text-green-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'archived':
-        return 'bg-zinc-100 text-zinc-800';
-      default:
-        return 'bg-zinc-100 text-zinc-800';
-    }
-  }
-
-  // Render blogs
-  function renderBlogs(blogs: Blog[]): void {
-    if (blogs.length === 0) {
-      emptyState?.classList.remove('hidden');
-      blogsList?.classList.add('hidden');
-      return;
-    }
-
-    emptyState?.classList.add('hidden');
-    blogsList?.classList.remove('hidden');
-
-    const html = blogs.map((blog) => `
-      <div class="bg-white rounded-lg border border-zinc-200 p-6 hover:shadow-md transition-shadow">
-        <div class="flex items-start justify-between">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-3 mb-2">
-              <h3 class="text-lg font-semibold text-zinc-900 truncate">${escapeHtml(blog.title)}</h3>
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(blog.status)}">
-                ${blog.status.charAt(0).toUpperCase() + blog.status.slice(1)}
-              </span>
-            </div>
-            ${blog.excerpt ? `<p class="text-zinc-600 mb-3 line-clamp-2">${escapeHtml(blog.excerpt)}</p>` : ''}
-            <p class="text-sm text-zinc-500">Last updated ${formatDate(blog.updatedAt)}</p>
-          </div>
-          <div class="flex items-center gap-2 ml-4">
-            <a
-              href="/blogs/${blog.id}/edit"
-              class="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            >
-              Edit
-            </a>
-            <button
-              data-id="${blog.id}"
-              class="delete-blog-btn px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-
-    if (blogsList) {
-      blogsList.innerHTML = html;
-    }
-
-    // Add delete event listeners
-    document.querySelectorAll('.delete-blog-btn').forEach((btn) => {
-      btn.addEventListener('click', async (e) => {
-        const blogId = (e.currentTarget as HTMLElement).dataset.id;
-        if (!blogId) return;
-
-        if (confirm('Are you sure you want to delete this blog?')) {
-          await deleteBlog(blogId);
-        }
-      });
-    });
-  }
-
-  // Escape HTML
-  function escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  // Fetch blogs
-  async function fetchBlogs(status: string = 'all'): Promise<void> {
-    // Show loading
-    loadingState?.classList.remove('hidden');
-    errorState?.classList.add('hidden');
-    emptyState?.classList.add('hidden');
-    blogsList?.classList.add('hidden');
-
-    try {
-      const url = status === 'all'
-        ? '/api/blogs'
-        : `/api/blogs?status=${status}`;
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Redirect to login if not authenticated
-          window.location.href = '/login';
-          return;
-        }
-        throw new Error('Failed to fetch blogs');
-      }
-
-      const data: BlogsResponse = await response.json();
-      renderBlogs(data.blogs);
-    } catch (error) {
-      console.error('Error fetching blogs:', error);
-      errorState?.classList.remove('hidden');
-      if (errorMessage && error instanceof Error) {
-        errorMessage.textContent = error.message;
-      }
-    } finally {
-      loadingState?.classList.add('hidden');
-    }
-  }
-
-  // Delete blog
-  async function deleteBlog(blogId: string): Promise<void> {
-    try {
-      const response = await fetch(`/api/blogs/${blogId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete blog');
-      }
-
-      // Refresh the list
-      await fetchBlogs(currentStatus);
-    } catch (error) {
-      console.error('Error deleting blog:', error);
-      alert('Failed to delete blog. Please try again.');
-    }
-  }
-
-  // Create new blog
-  function createNewBlog(): void {
-    window.location.href = '/blogs/new';
-  }
-
-  // Status filter handlers
-  statusFilterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const status = btn.dataset.status || 'all';
-      currentStatus = status;
-
-      // Update button styles
-      statusFilterBtns.forEach((b) => {
-        if (b === btn) {
-          b.classList.remove('bg-white', 'text-zinc-700', 'hover:bg-zinc-100');
-          b.classList.add('bg-zinc-900', 'text-white');
-        } else {
-          b.classList.remove('bg-zinc-900', 'text-white');
-          b.classList.add('bg-white', 'text-zinc-700', 'hover:bg-zinc-100');
-        }
-      });
-
-      fetchBlogs(status);
-    });
-  });
-
-  // Event listeners
-  createBlogBtn?.addEventListener('click', createNewBlog);
-  createFirstBlogBtn?.addEventListener('click', createNewBlog);
-  retryBtn?.addEventListener('click', () => fetchBlogs(currentStatus));
-
-  // Initial fetch
-  fetchBlogs();
-</script>
 
 <style>
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

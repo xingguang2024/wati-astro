@@ -39,6 +39,7 @@ bun run lint:fix
 - **DaisyUI** - Component library on top of Tailwind
 - **MDX** - Markdown + JSX support via `@astrojs/mdx`
 - **Plate.js** - Rich text editor with AI capabilities
+- **@ai-sdk/google** - Google AI integration for editor AI features
 - **Cloudflare** - Deployment adapter for Cloudflare Pages
 
 ### Project Structure
@@ -68,6 +69,12 @@ public/               # Static assets served at root
 - Use for: FAQ accordions, modals, tabs, comparison tables
 - Require `client:*` directives when imported into `.astro` files
 - Common pattern: `import FAQ from '../components/FAQ'` then use as `<FAQ client:load />`
+
+### Import Path Aliases
+
+The project uses the `@/*` path alias for cleaner imports:
+- Configured in `tsconfig.json`: `"@/*": ["./src/*"]`
+- Use: `import { foo } from '@/components/foo'` instead of `'../../components/foo'`
 
 ### Custom Vite Plugins
 
@@ -181,3 +188,8 @@ The rich text editor (`src/components/PlateEditor.tsx`) is built on Plate.js wit
 
 - **`cn()`** (`src/utils/index.ts`): Merges Tailwind classes using `clsx` + `tailwind-merge`
 - Use for conditional class composition: `cn("base-class", isActive && "active-class")`
+
+### Environment Variables
+
+Required environment variables (set in `.env` or deployment platform):
+- `GOOGLE_API_KEY` - Google AI API key for editor AI features (get one at https://ai.google.dev)

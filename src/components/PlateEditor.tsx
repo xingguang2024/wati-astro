@@ -1,7 +1,7 @@
 /**
  * Plate AI Markdown Editor Component
  *
- * A rich text editor with AI assistance powered by Plate.js and OpenAI
+ * A rich text editor with AI assistance powered by Plate.js and Google AI
  */
 
 import {
@@ -289,7 +289,7 @@ export default function PlateEditor({
 
   const handleAIGenerate = async (prompt: string) => {
     if (!openAIApiKey) {
-      alert('Please provide an OpenAI API key');
+      alert('Please provide a Google AI API key');
       return;
     }
 
@@ -305,36 +305,46 @@ export default function PlateEditor({
         }) || '';
       }
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${openAIApiKey}`,
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${openAIApiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `${prompt}\n\n${selectedText ? `Selected text: ${selectedText}` : 'Continue from the current position.'}`,
+                  },
+                ],
+                role: 'user',
+              },
+              {
+                parts: [
+                  {
+                    text: 'You are a helpful writing assistant. Respond only with the improved/generated text without any additional commentary or markdown formatting.',
+                  },
+                ],
+                role: 'model',
+              },
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 1000,
+            },
+          }),
         },
-        body: JSON.stringify({
-          model: 'gpt-4',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are a helpful writing assistant. Respond only with the improved/generated text without any additional commentary or markdown formatting.',
-            },
-            {
-              role: 'user',
-              content: `${prompt}\n\n${selectedText ? `Selected text: ${selectedText}` : 'Continue from the current position.'}`,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error('AI request failed');
       }
 
       const data = await response.json();
-      const aiText = data.choices[0].message.content;
+      const aiText = data.candidates[0]?.content?.parts[0]?.text || '';
 
       // Insert AI-generated text at cursor using slate API
       slate.Transforms.insertText(editor as any, aiText);

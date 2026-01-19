@@ -9,6 +9,11 @@ import { codeJumpPlugin } from "./vite-plugins/code-jump-plugin.ts";
 
 // https://astro.build/config
 export default defineConfig({
+  server: {
+    host: true,
+    open: true,
+    port: 4321
+  },
   vite: {
     plugins: [
       tailwindcss(),
@@ -28,4 +33,5 @@ export default defineConfig({
   integrations: [react(), mdx(), sitemap()],
   output: "server",
   adapter: cloudflare(),
+  output: "server"
 });

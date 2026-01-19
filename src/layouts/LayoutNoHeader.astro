@@ -1,6 +1,5 @@
 ---
-import { ClientRouter } from "astro:transitions";
-import Header from "../components/Header.astro";
+import { ClientRouter } from 'astro:transitions';
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
 
@@ -46,7 +45,6 @@ const {
     <ClientRouter />
   </head>
   <body class="antialiased bg-white text-zinc-900 font-sans">
-    <Header />
     <main class="min-h-screen">
       <slot />
     </main>
