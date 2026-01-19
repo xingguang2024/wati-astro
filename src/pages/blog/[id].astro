@@ -1,0 +1,189 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const { id } = Astro.params;
+
+const WP_API_URL = `https://watidev.wpengine.com/wp-json/wp/v2/posts/${id}?_fields=id,date,title,link,content,excerpt,_embedded`;
+
+export const prerender = false;
+
+interface Author {
+  id: number;
+  name: string;
+  url?: string;
+  description?: string;
+}
+
+interface Media {
+  source_url?: string;
+  alt_text?: string;
+  media_details?: {
+    width?: number;
+    height?: number;
+  };
+}
+
+interface Post {
+  id: number;
+  date: string;
+  title: { rendered: string };
+  link: string;
+  content: { rendered: string };
+  excerpt: { rendered: string };
+  _embedded?: {
+    author?: Author[];
+    "wp:featuredmedia"?: Media[];
+  };
+}
+
+let post: Post | null = null;
+let error: string | null = null;
+
+try {
+  const response = await fetch(WP_API_URL, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error("Post not found");
+    }
+    throw new Error(`WordPress API returned ${response.status}`);
+  }
+
+  post = await response.json();
+} catch (e) {
+  console.error("Failed to fetch post from WordPress:", e);
+  error = e instanceof Error ? e.message : "Failed to load post";
+}
+
+// Format date
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+// Get plain title without HTML
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").trim();
+}
+---
+
+<Layout title={post ? stripHtml(post.title.rendered) + " | Wati Blog" : ""}>
+  {!error && post ? (
+    <article class="pt-12 pb-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+          <!-- Back to Blog -->
+          <a
+            href="/blogs"
+            class="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 transition-colors mb-8"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Blog
+          </a>
+
+          <!-- Featured Image -->
+          {post._embedded?.["wp:featuredmedia"]?.[0]?.source_url && (
+            <div class="mb-10 rounded-2xl overflow-hidden shadow-xl">
+              <img
+                src={post._embedded["wp:featuredmedia"][0].source_url}
+                alt={post._embedded["wp:featuredmedia"][0].alt_text || post.title.rendered}
+                class="w-full h-auto"
+              />
+            </div>
+          )}
+
+          <!-- Title -->
+          <h1 class="font-bold text-4xl md:text-5xl lg:text-6xl text-zinc-900 leading-tight mb-6">
+            <span set:html={post.title.rendered} />
+          </h1>
+
+          <!-- Meta -->
+          <div class="flex flex-wrap items-center gap-4 mb-10 pb-10 border-b border-zinc-200">
+            <time class="text-zinc-600" datetime={post.date}>
+              {formatDate(post.date)}
+            </time>
+            {post._embedded?.author?.[0] && (
+              <>
+                <span class="text-zinc-300">•</span>
+                <span class="text-zinc-600">
+                  By {post._embedded.author[0].name}
+                </span>
+              </>
+            )}
+          </div>
+
+          <!-- Content -->
+          <div
+            class="prose prose-lg max-w-none
+              prose-headings:font-bold prose-headings:text-zinc-900
+              prose-h1:text-4xl prose-h1:mt-12 prose-h1:mb-6
+              prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-5
+              prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+              prose-p:text-zinc-700 prose-p:leading-relaxed prose-p:mb-6
+              prose-a:text-blue-600 prose-a:no-underline hover:prose-a:text-blue-700
+              prose-strong:text-zinc-900 prose-strong:font-semibold
+              prose-code:text-pink-600 prose-code:bg-zinc-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+              prose-pre:bg-zinc-900 prose-pre:text-zinc-100
+              prose-blockquote:border-l-4 prose-blockquote:border-zinc-300 prose-blockquote:pl-4 prose-blockquote:italic
+              prose-ul:list-disc prose-ul:pl-6 prose-ul:mb-6
+              prose-ol:list-decimal prose-ol:pl-6 prose-ol:mb-6
+              prose-li:mb-2
+              prose-img:rounded-xl prose-img:shadow-lg
+            "
+            set:html={post.content.rendered}
+          />
+        </div>
+      </div>
+    </article>
+  ) : (
+    <div class="pt-20 pb-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto text-center">
+          {error === "Post not found" ? (
+            <>
+              <h1 class="font-bold text-5xl text-zinc-900 mb-6">Post Not Found</h1>
+              <p class="text-xl text-zinc-600 mb-8">
+                The blog post you're looking for doesn't exist or has been removed.
+              </p>
+              <a
+                href="/blogs"
+                class="inline-flex items-center gap-2 bg-zinc-900 text-white font-semibold text-lg px-8 py-4 rounded-xl hover:bg-zinc-800 transition-colors"
+              >
+                Back to Blog
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </>
+          ) : (
+            <>
+              <div class="bg-red-50 border border-red-200 rounded-xl p-8 mb-8">
+                <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h2 class="text-xl font-semibold text-red-800 mb-2">Unable to Load Post</h2>
+                <p class="text-red-600">{error}</p>
+              </div>
+              <a
+                href="/blogs"
+                class="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+              >
+                Back to Blog
+              </a>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+</Layout>

@@ -1,0 +1,248 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const title = "AI Agent Blog | Wati";
+const description = "Latest insights, tutorials, and updates about AI Agents from the Wati team";
+
+// Fetch ai-agent category ID first
+const CATEGORIES_API_URL = "https://watidev.wpengine.com/wp-json/wp/v2/categories?slug=ai-agent";
+
+export const prerender = false;
+
+interface Category {
+  id: number;
+  slug: string;
+  name: string;
+}
+
+// Get ai-agent category ID
+let aiAgentCategoryId: number | null = null;
+try {
+  const catResponse = await fetch(CATEGORIES_API_URL, {
+    headers: { Accept: "application/json" },
+  });
+  if (catResponse.ok) {
+    const categories: Category[] = await catResponse.json();
+    if (categories.length > 0) {
+      aiAgentCategoryId = categories[0].id;
+    }
+  }
+} catch (e) {
+  console.error("Failed to fetch categories:", e);
+}
+
+// Fetch posts from WordPress API filtered by ai-agent category
+const WP_API_URL = aiAgentCategoryId
+  ? `https://watidev.wpengine.com/wp-json/wp/v2/posts?categories=${aiAgentCategoryId}&per_page=12&_fields=id,date,title,link,content,excerpt,_embedded,_links`
+  : "https://watidev.wpengine.com/wp-json/wp/v2/posts?per_page=12&_fields=id,date,title,link,content,excerpt,_embedded,_links";
+
+interface Author {
+  id: number;
+  name: string;
+  url?: string;
+  description?: string;
+}
+
+interface Media {
+  source_url?: string;
+  alt_text?: string;
+  media_details?: {
+    width?: number;
+    height?: number;
+  };
+}
+
+interface Post {
+  id: number;
+  date: string;
+  title: { rendered: string };
+  link: string;
+  content: { rendered: string };
+  excerpt: { rendered: string };
+  _embedded?: {
+    author?: Author[];
+    "wp:featuredmedia"?: Media[];
+  };
+  _links?: {
+    self?: { href: string }[];
+  };
+}
+
+let posts: Post[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(WP_API_URL, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`WordPress API returned ${response.status}`);
+  }
+
+  posts = await response.json();
+  console.log("Fetched posts:", posts);
+} catch (e) {
+  console.error("Failed to fetch posts from WordPress:", e);
+  error = e instanceof Error ? e.message : "Failed to load posts";
+}
+
+// Format date
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+// Strip HTML from excerpt
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").trim();
+}
+---
+
+<Layout title={title} description={description}>
+  <section class="py-20 bg-gradient-to-b from-zinc-50 to-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h1 class="font-bold text-5xl md:text-6xl text-zinc-900 mb-6">
+          AI Agent Blog
+        </h1>
+        <p class="text-xl text-zinc-600 max-w-2xl mx-auto">
+          Latest insights, tutorials, and updates about AI Agents from the Wati team
+        </p>
+      </div>
+
+      {error ? (
+        <div class="max-w-2xl mx-auto text-center py-12">
+          <div class="bg-red-50 border border-red-200 rounded-xl p-8">
+            <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h2 class="text-xl font-semibold text-red-800 mb-2">Unable to Load Posts</h2>
+            <p class="text-red-600">{error}</p>
+            <p class="text-red-500 text-sm mt-4">Please try again later or contact support if the issue persists.</p>
+          </div>
+        </div>
+      ) : posts.length === 0 ? (
+        <div class="text-center py-12">
+          <div class="inline-block animate-pulse">
+            <svg class="w-16 h-16 text-zinc-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <p class="text-zinc-500 mt-4">Loading posts...</p>
+        </div>
+      ) : (
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {posts.map((post) => {
+            const featuredImage = post._embedded?.["wp:featuredmedia"]?.[0];
+            const author = post._embedded?.author?.[0];
+            const excerpt = stripHtml(post.excerpt.rendered);
+
+            return (
+              <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+                {/* Featured Image */}
+                <a
+                  href={`/blog/${post.id}`}
+                  class="block aspect-[16/10] overflow-hidden bg-zinc-100 relative"
+                >
+                  {featuredImage?.source_url ? (
+                    <img
+                      src={featuredImage.source_url}
+                      alt={featuredImage.alt_text || post.title.rendered}
+                      class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                      <svg class="w-16 h-16 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                    </div>
+                  )}
+                </a>
+
+                {/* Content */}
+                <div class="p-6 flex-1 flex flex-col">
+                  {/* Date */}
+                  <div class="flex items-center gap-3 mb-3">
+                    <time class="text-sm text-zinc-500" datetime={post.date}>
+                      {formatDate(post.date)}
+                    </time>
+                    {author && (
+                      <>
+                        <span class="text-zinc-300">•</span>
+                        <span class="text-sm text-zinc-500">{author.name}</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <a href={`/blog/${post.id}`} class="block mb-3">
+                    <h2 class="font-bold text-xl text-zinc-900 leading-snug hover:text-blue-600 transition-colors line-clamp-2">
+                      {post.title.rendered}
+                    </h2>
+                  </a>
+
+                  {/* Excerpt */}
+                  <p class="text-zinc-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
+                    {excerpt}
+                  </p>
+
+                  {/* Read More Link */}
+                  <a
+                    href={`/blog/${post.id}`}
+                    class="inline-flex items-center gap-2 text-blue-600 font-semibold text-sm hover:text-blue-700 transition-colors mt-auto"
+                  >
+                    Read More
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {!error && posts.length > 0 && (
+        <div class="text-center mt-16">
+          <a
+            href="https://watidev.wpengine.com/blog/"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 bg-zinc-900 text-white font-semibold text-lg px-8 py-4 rounded-xl hover:bg-zinc-800 transition-all hover:shadow-lg hover:-translate-y-0.5"
+          >
+            View All Posts on WordPress
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
