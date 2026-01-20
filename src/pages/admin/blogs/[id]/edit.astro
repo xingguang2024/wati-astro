@@ -1,0 +1,419 @@
+---
+/**
+ * Blog Editor Page
+ *
+ * Displays the PlateEditor for editing a specific blog.
+ * Fetches blog data on the server and passes it to the client component.
+ * Only accessible to admin and editor roles.
+ */
+
+import Layout from "@/layouts/LayoutNoHeader.astro";
+import PlateEditor from "@/components/PlateEditor";
+import { AuthService } from "@/lib/auth";
+import { blogs } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
+import type { APIContext } from "astro";
+import type { UserRole } from "@/lib/permissions";
+
+export const prerender = false;
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.params;
+
+// Fetch blog on server
+let blog: any = null;
+let notFound = false;
+let notAuthenticated = false;
+let forbidden = false;
+
+try {
+  const token = AuthService.extractToken(Astro.request);
+  const payload = token ? await AuthService.verifyToken(token) : null;
+
+  if (!payload) {
+    notAuthenticated = true;
+  } else {
+    // Check role-based permissions
+    const userRole: UserRole = payload.role as UserRole;
+    const allowedRoles: UserRole[] = ["admin", "editor"];
+    const isSuperAdmin = payload.userId === "super-admin";
+
+    if (!allowedRoles.includes(userRole) && !isSuperAdmin) {
+      forbidden = true;
+    } else {
+      const db = (Astro.locals as any).db;
+      if (!db) {
+        throw new Error("Database not available");
+      }
+
+      // Super admin can edit any blog, regular users can only edit their own
+      const blogsData = await db
+        .select()
+        .from(blogs)
+        .where(
+          and(
+            eq(blogs.id, id),
+            isSuperAdmin ? undefined : eq(blogs.userId, payload.userId),
+          ),
+        )
+        .limit(1);
+
+      if (blogsData.length === 0) {
+        notFound = true;
+      } else {
+        blog = blogsData[0];
+      }
+    }
+  }
+} catch (error) {
+  console.error("Error fetching blog:", error);
+  notFound = true;
+}
+
+// Handle errors
+if (notAuthenticated) {
+  return Astro.redirect("/login");
+}
+
+if (forbidden) {
+  return new Response("Forbidden: You do not have permission to edit blogs", {
+    status: 403,
+  });
+}
+
+if (notFound) {
+  return Astro.redirect("/admin");
+}
+
+// Parse content
+let initialContent;
+try {
+  initialContent = blog ? JSON.parse(blog.content) : undefined;
+} catch {
+  initialContent = undefined;
+}
+
+const title = blog ? `Edit - ${blog.title}` : "Edit Blog";
+const description = blog?.excerpt || `Edit ${blog?.title || "blog"}`;
+---
+
+<Layout title={title} description={description}>
+  <div class="min-h-screen bg-zinc-50 pt-20">
+    <!-- Editor Header -->
+    <header class="bg-white border-b border-zinc-200">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <a
+              href="/admin"
+              class="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+              title="Back to blogs"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-zinc-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+            </a>
+            <div>
+              <h1 class="text-xl font-semibold text-zinc-900" id="blogTitle">
+                {blog?.title || "Untitled"}
+              </h1>
+              <p class="text-sm text-zinc-500">
+                Status: <span id="blogStatus" class="font-medium capitalize"
+                  >{blog?.status || "draft"}</span
+                >
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <!-- Status Toggle -->
+            <select
+              id="statusSelect"
+              class="px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="draft" selected={blog?.status === "draft"}
+                >Draft</option
+              >
+              <option value="published" selected={blog?.status === "published"}
+                >Published</option
+              >
+              <option value="archived" selected={blog?.status === "archived"}
+                >Archived</option
+              >
+            </select>
+
+            <!-- Save Button -->
+            <button
+              id="saveBtn"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                ></path>
+              </svg>
+              Save
+            </button>
+
+            <!-- Auto-save indicator -->
+            <div
+              id="autoSaveIndicator"
+              class="hidden flex items-center gap-2 text-sm text-zinc-500"
+            >
+              <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse">
+              </div>
+              Saving...
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Editor Container -->
+    <main class="container mx-auto px-4 py-8">
+      <div
+        class="bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden"
+      >
+        <div id="editor-container" data-blog-id={id}>
+          <PlateEditor
+            client:load
+            documentId={id}
+            initialValue={initialContent}
+            onSave={undefined}
+            useR2Upload={true}
+          />
+        </div>
+      </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div
+      id="toast"
+      class="fixed bottom-4 right-4 transform translate-y-20 opacity-0 transition-all duration-300 z-50"
+    >
+      <div
+        class="bg-zinc-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3"
+      >
+        <svg
+          id="toastSuccessIcon"
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-green-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <svg
+          id="toastErrorIcon"
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-red-400 hidden"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span id="toastMessage">Saved successfully</span>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // This script runs on the client after the page loads
+  // It will be integrated with the PlateEditor component in Phase 9
+
+  interface BlogUpdate {
+    title?: string;
+    content?: any;
+    excerpt?: string;
+    status?: string;
+    tags?: string[] | null;
+  }
+
+  const editorContainer = document.getElementById("editor-container");
+  const saveBtn = document.getElementById("saveBtn");
+  const statusSelect = document.getElementById("statusSelect");
+  const autoSaveIndicator = document.getElementById("autoSaveIndicator");
+  const blogTitle = document.getElementById("blogTitle");
+  const blogStatus = document.getElementById("blogStatus");
+
+  const blogId = editorContainer?.dataset.blogId;
+  let lastSavedContent: string = "";
+  let autoSaveTimeout: NodeJS.Timeout | null = null;
+  let editorContent: any = null;
+
+  // Show toast notification
+  function showToast(message: string, isError: boolean = false): void {
+    const toast = document.getElementById("toast");
+    const toastMessage = document.getElementById("toastMessage");
+    const toastSuccessIcon = document.getElementById("toastSuccessIcon");
+    const toastErrorIcon = document.getElementById("toastErrorIcon");
+
+    if (toastMessage) toastMessage.textContent = message;
+    if (toastSuccessIcon) toastSuccessIcon.classList.toggle("hidden", isError);
+    if (toastErrorIcon) toastErrorIcon.classList.toggle("hidden", !isError);
+
+    toast?.classList.remove("translate-y-20", "opacity-0");
+    toast?.classList.add("translate-y-0", "opacity-100");
+
+    setTimeout(() => {
+      toast?.classList.add("translate-y-20", "opacity-0");
+      toast?.classList.remove("translate-y-0", "opacity-100");
+    }, 3000);
+  }
+
+  // Save blog
+  async function saveBlog(showNotification: boolean = true): Promise<boolean> {
+    if (!blogId) return false;
+
+    // Show saving state
+    saveBtn?.classList.add("opacity-50", "cursor-not-allowed");
+    saveBtn?.setAttribute("disabled", "true");
+    autoSaveIndicator?.classList.remove("hidden");
+
+    try {
+      // Get editor content from global (will be set by PlateEditor in Phase 9)
+      const content = (window as any).editorContent || editorContent;
+
+      // Generate excerpt from content (first paragraph)
+      let excerpt = null;
+      if (content && Array.isArray(content)) {
+        const firstParagraph = content.find((node: any) => node.type === "p");
+        if (firstParagraph && firstParagraph.children) {
+          excerpt = firstParagraph.children
+            .map((child: any) => child.text || "")
+            .join("")
+            .substring(0, 200);
+        }
+      }
+
+      // Generate title from first heading or use default
+      let title = "Untitled Blog";
+      if (content && Array.isArray(content)) {
+        const firstHeading = content.find(
+          (node: any) => node.type && node.type.startsWith("h"),
+        );
+        if (firstHeading && firstHeading.children) {
+          title =
+            firstHeading.children
+              .map((child: any) => child.text || "")
+              .join("") || "Untitled Blog";
+        }
+      }
+
+      const updateData: BlogUpdate = {
+        title,
+        content,
+        excerpt,
+        status: statusSelect?.value || "draft",
+      };
+
+      const response = await fetch(`/api/blogs/${blogId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save blog");
+      }
+
+      const result = await response.json();
+
+      // Update UI
+      if (blogTitle) blogTitle.textContent = result.blog.title;
+      if (blogStatus) blogStatus.textContent = result.blog.status;
+      lastSavedContent = JSON.stringify(content);
+
+      if (showNotification) {
+        showToast("Saved successfully");
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error saving blog:", error);
+      showToast("Failed to save blog", true);
+      return false;
+    } finally {
+      saveBtn?.classList.remove("opacity-50", "cursor-not-allowed");
+      saveBtn?.removeAttribute("disabled");
+      autoSaveIndicator?.classList.add("hidden");
+    }
+  }
+
+  // Auto-save with debounce
+  function scheduleAutoSave(): void {
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
+    }
+
+    autoSaveIndicator?.classList.remove("hidden");
+
+    autoSaveTimeout = setTimeout(() => {
+      saveBlog(false);
+    }, 2000); // Auto-save 2 seconds after last change
+  }
+
+  // Event listeners
+  saveBtn?.addEventListener("click", () => saveBlog(true));
+
+  statusSelect?.addEventListener("change", () => {
+    saveBlog(true);
+  });
+
+  // Listen for editor content changes (will be dispatched by PlateEditor in Phase 9)
+  window.addEventListener("editor-content-change", ((event: CustomEvent) => {
+    editorContent = event.detail;
+    const currentContent = JSON.stringify(event.detail);
+
+    // Only auto-save if content actually changed
+    if (currentContent !== lastSavedContent) {
+      scheduleAutoSave();
+    }
+  }) as EventListener);
+
+  // Warn before leaving if there are unsaved changes
+  window.addEventListener("beforeunload", (e) => {
+    const currentContent = JSON.stringify(
+      (window as any).editorContent || editorContent,
+    );
+
+    if (currentContent !== lastSavedContent) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+</script>

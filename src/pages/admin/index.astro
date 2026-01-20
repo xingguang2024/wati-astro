@@ -6,10 +6,10 @@
  * Fetches blogs from /api/blogs endpoint.
  */
 
-import Layout from '../layouts/Layout.astro';
+import Layout from "@/layouts/LayoutNoHeader.astro";
 
-const title = 'My Blogs - Wati';
-const description = 'Manage and edit your blogs';
+const title = "My Blogs - Wati";
+const description = "Manage and edit your blogs";
 ---
 
 <Layout title={title} description={description}>
@@ -25,8 +25,16 @@ const description = 'Manage and edit your blogs';
           id="createBlogBtn"
           class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clip-rule="evenodd"></path>
           </svg>
           New Blog
         </button>
@@ -56,18 +64,35 @@ const description = 'Manage and edit your blogs';
 
       <!-- Loading State -->
       <div id="loadingState" class="text-center py-12">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div
+          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+        >
+        </div>
         <p class="mt-4 text-zinc-600">Loading blogs...</p>
       </div>
 
       <!-- Error State -->
       <div id="errorState" class="hidden text-center py-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 text-red-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-semibold text-zinc-900 mb-2">Failed to load blogs</h3>
+        <h3 class="text-lg font-semibold text-zinc-900 mb-2">
+          Failed to load blogs
+        </h3>
         <p id="errorMessage" class="text-zinc-600 mb-4"></p>
         <button
           id="retryBtn"
@@ -79,9 +104,22 @@ const description = 'Manage and edit your blogs';
 
       <!-- Empty State -->
       <div id="emptyState" class="hidden text-center py-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-zinc-100 mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-zinc-100 mb-4"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 text-zinc-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
           </svg>
         </div>
         <h3 class="text-lg font-semibold text-zinc-900 mb-2">No blogs yet</h3>
@@ -107,7 +145,7 @@ const description = 'Manage and edit your blogs';
     id: string;
     title: string;
     slug: string;
-    status: 'draft' | 'published' | 'archived';
+    status: "draft" | "published" | "archived";
     excerpt: string | null;
     updatedAt: number;
     createdAt: number;
@@ -118,17 +156,20 @@ const description = 'Manage and edit your blogs';
   }
 
   // Authenticated fetch function
-  async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
-    const token = localStorage.getItem('auth_token');
+  async function authFetch(
+    url: string,
+    options: RequestInit = {},
+  ): Promise<Response> {
+    const token = localStorage.getItem("auth_token");
 
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     };
 
     // Add Authorization header if token exists
     if (token) {
-      (headers as any)['Authorization'] = `Bearer ${token}`;
+      (headers as any)["Authorization"] = `Bearer ${token}`;
     }
 
     return fetch(url, {
@@ -138,17 +179,17 @@ const description = 'Manage and edit your blogs';
   }
 
   // DOM elements
-  const loadingState = document.getElementById('loadingState');
-  const errorState = document.getElementById('errorState');
-  const emptyState = document.getElementById('emptyState');
-  const blogsList = document.getElementById('blogsList');
-  const errorMessage = document.getElementById('errorMessage');
-  const createBlogBtn = document.getElementById('createBlogBtn');
-  const createFirstBlogBtn = document.getElementById('createFirstBlogBtn');
-  const retryBtn = document.getElementById('retryBtn');
-  const statusFilterBtns = document.querySelectorAll('.status-filter-btn');
+  const loadingState = document.getElementById("loadingState");
+  const errorState = document.getElementById("errorState");
+  const emptyState = document.getElementById("emptyState");
+  const blogsList = document.getElementById("blogsList");
+  const errorMessage = document.getElementById("errorMessage");
+  const createBlogBtn = document.getElementById("createBlogBtn");
+  const createFirstBlogBtn = document.getElementById("createFirstBlogBtn");
+  const retryBtn = document.getElementById("retryBtn");
+  const statusFilterBtns = document.querySelectorAll(".status-filter-btn");
 
-  let currentStatus: string = 'all';
+  let currentStatus: string = "all";
 
   // Format date
   function formatDate(timestamp: number): string {
@@ -158,42 +199,48 @@ const description = 'Manage and edit your blogs';
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      return 'Today';
+      return "Today";
     } else if (diffDays === 1) {
-      return 'Yesterday';
+      return "Yesterday";
     } else if (diffDays < 7) {
       return `${diffDays} days ago`;
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
     }
   }
 
   // Get status badge class
   function getStatusClass(status: string): string {
     switch (status) {
-      case 'published':
-        return 'bg-green-100 text-green-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'archived':
-        return 'bg-zinc-100 text-zinc-800';
+      case "published":
+        return "bg-green-100 text-green-800";
+      case "draft":
+        return "bg-yellow-100 text-yellow-800";
+      case "archived":
+        return "bg-zinc-100 text-zinc-800";
       default:
-        return 'bg-zinc-100 text-zinc-800';
+        return "bg-zinc-100 text-zinc-800";
     }
   }
 
   // Render blogs
   function renderBlogs(blogs: Blog[]): void {
     if (blogs.length === 0) {
-      emptyState?.classList.remove('hidden');
-      blogsList?.classList.add('hidden');
+      emptyState?.classList.remove("hidden");
+      blogsList?.classList.add("hidden");
       return;
     }
 
-    emptyState?.classList.add('hidden');
-    blogsList?.classList.remove('hidden');
+    emptyState?.classList.add("hidden");
+    blogsList?.classList.remove("hidden");
 
-    const html = blogs.map((blog) => `
+    const html = blogs
+      .map(
+        (blog) => `
       <div class="bg-white rounded-lg border border-zinc-200 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-start justify-between">
           <div class="flex-1 min-w-0">
@@ -203,12 +250,12 @@ const description = 'Manage and edit your blogs';
                 ${blog.status.charAt(0).toUpperCase() + blog.status.slice(1)}
               </span>
             </div>
-            ${blog.excerpt ? `<p class="text-zinc-600 mb-3 line-clamp-2">${escapeHtml(blog.excerpt)}</p>` : ''}
+            ${blog.excerpt ? `<p class="text-zinc-600 mb-3 line-clamp-2">${escapeHtml(blog.excerpt)}</p>` : ""}
             <p class="text-sm text-zinc-500">Last updated ${formatDate(blog.updatedAt)}</p>
           </div>
           <div class="flex items-center gap-2 ml-4">
             <a
-              href="/blogs/${blog.id}/edit"
+        href="/admin/blogs/${blog.id}/edit"
               class="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
               Edit
@@ -222,19 +269,21 @@ const description = 'Manage and edit your blogs';
           </div>
         </div>
       </div>
-    `).join('');
+    `,
+      )
+      .join("");
 
     if (blogsList) {
       blogsList.innerHTML = html;
     }
 
     // Add delete event listeners
-    document.querySelectorAll('.delete-blog-btn').forEach((btn) => {
-      btn.addEventListener('click', async (e) => {
+    document.querySelectorAll(".delete-blog-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
         const blogId = (e.currentTarget as HTMLElement).dataset.id;
         if (!blogId) return;
 
-        if (confirm('Are you sure you want to delete this blog?')) {
+        if (confirm("Are you sure you want to delete this blog?")) {
           await deleteBlog(blogId);
         }
       });
@@ -243,45 +292,44 @@ const description = 'Manage and edit your blogs';
 
   // Escape HTML
   function escapeHtml(text: string): string {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
   }
 
   // Fetch blogs
-  async function fetchBlogs(status: string = 'all'): Promise<void> {
+  async function fetchBlogs(status: string = "all"): Promise<void> {
     // Show loading
-    loadingState?.classList.remove('hidden');
-    errorState?.classList.add('hidden');
-    emptyState?.classList.add('hidden');
-    blogsList?.classList.add('hidden');
+    loadingState?.classList.remove("hidden");
+    errorState?.classList.add("hidden");
+    emptyState?.classList.add("hidden");
+    blogsList?.classList.add("hidden");
 
     try {
-      const url = status === 'all'
-        ? '/api/blogs'
-        : `/api/blogs?status=${status}`;
+      const url =
+        status === "all" ? "/api/blogs" : `/api/blogs?status=${status}`;
 
       const response = await authFetch(url);
 
       if (!response.ok) {
         if (response.status === 401) {
           // Redirect to login if not authenticated
-          window.location.href = '/login';
+          window.location.href = "/login";
           return;
         }
-        throw new Error('Failed to fetch blogs');
+        throw new Error("Failed to fetch blogs");
       }
 
       const data: BlogsResponse = await response.json();
       renderBlogs(data.blogs);
     } catch (error) {
-      console.error('Error fetching blogs:', error);
-      errorState?.classList.remove('hidden');
+      console.error("Error fetching blogs:", error);
+      errorState?.classList.remove("hidden");
       if (errorMessage && error instanceof Error) {
         errorMessage.textContent = error.message;
       }
     } finally {
-      loadingState?.classList.add('hidden');
+      loadingState?.classList.add("hidden");
     }
   }
 
@@ -289,40 +337,40 @@ const description = 'Manage and edit your blogs';
   async function deleteBlog(blogId: string): Promise<void> {
     try {
       const response = await authFetch(`/api/blogs/${blogId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete blog');
+        throw new Error("Failed to delete blog");
       }
 
       // Refresh the list
       await fetchBlogs(currentStatus);
     } catch (error) {
-      console.error('Error deleting blog:', error);
-      alert('Failed to delete blog. Please try again.');
+      console.error("Error deleting blog:", error);
+      alert("Failed to delete blog. Please try again.");
     }
   }
 
   // Create new blog
   function createNewBlog(): void {
-    window.location.href = '/blogs/new';
+    window.location.href = "/blogs/new";
   }
 
   // Status filter handlers
   statusFilterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const status = btn.dataset.status || 'all';
+    btn.addEventListener("click", () => {
+      const status = btn.dataset.status || "all";
       currentStatus = status;
 
       // Update button styles
       statusFilterBtns.forEach((b) => {
         if (b === btn) {
-          b.classList.remove('bg-white', 'text-zinc-700', 'hover:bg-zinc-100');
-          b.classList.add('bg-zinc-900', 'text-white');
+          b.classList.remove("bg-white", "text-zinc-700", "hover:bg-zinc-100");
+          b.classList.add("bg-zinc-900", "text-white");
         } else {
-          b.classList.remove('bg-zinc-900', 'text-white');
-          b.classList.add('bg-white', 'text-zinc-700', 'hover:bg-zinc-100');
+          b.classList.remove("bg-zinc-900", "text-white");
+          b.classList.add("bg-white", "text-zinc-700", "hover:bg-zinc-100");
         }
       });
 
@@ -331,14 +379,14 @@ const description = 'Manage and edit your blogs';
   });
 
   // Event listeners
-  createBlogBtn?.addEventListener('click', createNewBlog);
-  createFirstBlogBtn?.addEventListener('click', createNewBlog);
-  retryBtn?.addEventListener('click', () => fetchBlogs(currentStatus));
+  createBlogBtn?.addEventListener("click", createNewBlog);
+  createFirstBlogBtn?.addEventListener("click", createNewBlog);
+  retryBtn?.addEventListener("click", () => fetchBlogs(currentStatus));
 
   // Check authentication on page load
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem("auth_token");
   if (!token) {
-    window.location.href = '/login';
+    window.location.href = "/login";
   } else {
     // Initial fetch
     fetchBlogs();

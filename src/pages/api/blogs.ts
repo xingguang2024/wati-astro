@@ -23,7 +23,7 @@ export const GET: APIRoute = async ({ request, locals, url }) => {
   const status = url.searchParams.get("status") || "all";
 
   // Super admin can see all blogs
-  const isSuperAdmin = payload.userId === 'super-admin';
+  const isSuperAdmin = payload.userId === "super-admin";
 
   const userBlogs = await db
     .select()
@@ -87,7 +87,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   // Handle super admin - userId is nullable
-  const isSuperAdmin = payload.userId === 'super-admin';
+  const isSuperAdmin = payload.userId === "super-admin";
 
   await db.insert(blogs).values({
     id: blogId,

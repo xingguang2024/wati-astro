@@ -1,0 +1,282 @@
+---
+/**
+ * Public Blog Display Page
+ *
+ * Displays a published blog post to the public.
+ * Fetches blog by slug or id and renders the Plate content as HTML.
+ * No authentication required - only shows published blogs.
+ */
+
+import Layout from "@/layouts/LayoutNoHeader.astro";
+import { blogs } from "@/db/schema";
+import { eq, or, and } from "drizzle-orm";
+import type { APIContext } from "astro";
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+// Fetch blog on server (by slug or id)
+let blog: any = null;
+let notFound = false;
+
+try {
+  const db = (Astro.locals as any).db;
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  // Try to fetch by slug first, then by id
+  const blogData = await db
+    .select()
+    .from(blogs)
+    .where(
+      and(
+        or(eq(blogs.slug, id), eq(blogs.id, id)),
+        eq(blogs.status, "published"),
+      ),
+    )
+    .limit(1);
+
+  if (blogData.length === 0) {
+    notFound = true;
+  } else {
+    blog = blogData[0];
+  }
+} catch (error) {
+  console.error("Error fetching blog:", error);
+  notFound = true;
+}
+
+// Handle not found
+if (notFound) {
+  return Astro.redirect("/blogs");
+}
+
+// Parse content
+let content: any = null;
+try {
+  content = blog ? JSON.parse(blog.content) : [];
+} catch {
+  content = [];
+}
+
+// Simple HTML renderer for Plate content
+function renderPlateContent(nodes: any[]): string {
+  if (!Array.isArray(nodes)) return "";
+
+  return nodes
+    .map((node) => {
+      const { type, children, url, ...attributes } = node;
+
+      // Handle text nodes
+      if (!type && children) {
+        return children
+          .map((child: any) => {
+            if (typeof child === "string") return child;
+            if (child.text) return child.text;
+            if (child.bold) return `<strong>${child.text || ""}</strong>`;
+            if (child.italic) return `<em>${child.text || ""}</em>`;
+            if (child.underline) return `<u>${child.text || ""}</u>`;
+            if (child.strikethrough) return `<s>${child.text || ""}</s>`;
+            if (child.code) return `<code>${child.text || ""}</code>`;
+            return child.text || "";
+          })
+          .join("");
+      }
+
+      // Render children content
+      const childrenContent = children ? renderPlateContent(children) : "";
+
+      // Handle different node types
+      switch (type) {
+        case "h1":
+          return `<h1 class="text-4xl font-bold mb-4">${childrenContent}</h1>`;
+        case "h2":
+          return `<h2 class="text-3xl font-semibold mb-3">${childrenContent}</h2>`;
+        case "h3":
+          return `<h3 class="text-2xl font-semibold mb-2">${childrenContent}</h3>`;
+        case "p":
+          return `<p class="mb-4 leading-relaxed">${childrenContent}</p>`;
+        case "blockquote":
+          return `<blockquote class="border-l-4 border-zinc-300 pl-4 italic my-4">${childrenContent}</blockquote>`;
+        case "ul":
+          return `<ul class="list-disc list-inside mb-4 space-y-2">${childrenContent}</ul>`;
+        case "ol":
+          return `<ol class="list-decimal list-inside mb-4 space-y-2">${childrenContent}</ol>`;
+        case "li":
+          return `<li>${childrenContent}</li>`;
+        case "code":
+          return `<pre class="bg-zinc-100 p-4 rounded-lg overflow-x-auto mb-4"><code>${childrenContent}</code></pre>`;
+        case "a":
+          return `<a href="${url || "#"}" class="text-blue-600 hover:underline">${childrenContent}</a>`;
+        case "img":
+          return `<img src="${url || ""}" alt="${attributes.alt || ""}" class="rounded-lg my-4 max-w-full h-auto" />`;
+        case "hr":
+          return `<hr class="my-6 border-zinc-200" />`;
+        default:
+          return childrenContent;
+      }
+    })
+    .join("");
+}
+
+const renderedContent = renderPlateContent(content);
+const title = blog?.title || "Blog Post";
+const description = blog?.excerpt || `Read ${blog?.title || "this blog post"}`;
+const publishedDate = blog?.publishedAt
+  ? new Date(blog.publishedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  : "";
+---
+
+<Layout title={title} description={description}>
+  <div class="min-h-screen bg-zinc-50 pt-20">
+    <article class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Back Button -->
+      <a
+        href="/blogs"
+        class="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 mb-6 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Blogs
+      </a>
+
+      <!-- Blog Header -->
+      <header class="mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold text-zinc-900 mb-4">
+          {blog?.title}
+        </h1>
+
+        {
+          blog?.excerpt && (
+            <p class="text-xl text-zinc-600 mb-4">{blog.excerpt}</p>
+          )
+        }
+
+        <div class="flex items-center gap-4 text-sm text-zinc-500">
+          {
+            publishedDate && (
+              <div class="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                {publishedDate}
+              </div>
+            )
+          }
+
+          {
+            blog?.tags && (
+              <div class="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                  />
+                </svg>
+                {JSON.parse(blog.tags).join(", ")}
+              </div>
+            )
+          }
+        </div>
+
+        {
+          blog?.coverImage && (
+            <div class="mt-6 -mx-4">
+              <img
+                src={blog.coverImage}
+                alt={`Cover image for ${blog.title}`}
+                class="w-full h-64 md:h-96 object-cover rounded-lg"
+              />
+            </div>
+          )
+        }
+      </header>
+
+      <!-- Blog Content -->
+      <div
+        class="prose prose-lg max-w-none bg-white rounded-lg shadow-sm p-8 md:p-12"
+      >
+        <div set:html={renderedContent} />
+      </div>
+
+      <!-- Share Section -->
+      <footer class="mt-8 pt-8 border-t border-zinc-200">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-zinc-500">Share this article</p>
+          <div class="flex items-center gap-4">
+            <button
+              class="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+              title="Copy link"
+              id="copyLinkBtn"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-zinc-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </footer>
+    </article>
+  </div>
+</Layout>
+
+<script>
+  // Copy link functionality
+  const copyLinkBtn = document.getElementById("copyLinkBtn");
+
+  copyLinkBtn?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert("Link copied to clipboard!");
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+    }
+  });
+</script>
