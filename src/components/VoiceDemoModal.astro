@@ -1,0 +1,74 @@
+---
+/**
+ * Voice Demo Modal - Astro Component
+ *
+ * Uses starwind dialog for voice demo iframe
+ */
+
+import { Dialog, DialogContent } from "@/components/starwind/dialog";
+
+interface Props {
+  id?: string;
+}
+
+const { id = "voice-demo-modal" } = Astro.props;
+---
+
+<Dialog id={id}>
+  <DialogContent
+    class="w-[96%] md:w-228.5 h-156 p-0 bg-white rounded-2xl shadow-2xl overflow-hidden"
+    animationDuration={200}
+  >
+    <iframe
+      id="voice-demo-iframe"
+      src="https://dev-astra.watiapp.io/voice-demo"
+      allow="microphone"
+      class="w-full h-full border-0"
+      title="Voice Demo"
+    >
+    </iframe>
+  </DialogContent>
+</Dialog>
+
+<script>
+  // Pause iframe when dialog closes to save resources
+  const dialogWrapper = document.currentScript?.closest(".starwind-dialog");
+  if (dialogWrapper) {
+    const dialog = dialogWrapper.querySelector("dialog");
+    const iframe = document.getElementById(
+      "voice-demo-iframe",
+    ) as HTMLIFrameElement;
+
+    if (dialog && iframe) {
+      // Store original URL
+      const originalSrc = iframe.src;
+      let hasPaused = false;
+
+      // Use MutationObserver to watch for dialog state changes
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "open"
+          ) {
+            const isOpen = (mutation.target as HTMLDialogElement).open;
+
+            if (isOpen) {
+              // Dialog opened - restore iframe if paused
+              if (hasPaused) {
+                iframe.src = originalSrc;
+                hasPaused = false;
+              }
+            } else {
+              // Dialog closed - pause iframe to save resources
+              iframe.src = "";
+              hasPaused = true;
+            }
+          }
+        });
+      });
+
+      observer.observe(dialog, { attributes: true });
+    }
+  }
+</script>
