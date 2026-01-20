@@ -13,6 +13,9 @@
 
 import Layout from "../layouts/Layout.astro";
 import ColorButton from "../components/ColorButton.astro";
+import VoiceDemoModal from "../components/VoiceDemoModal.astro";
+import BookDemoModal from "../components/BookDemoModal.astro";
+import CalendlyModal from "../components/CalendlyModal.astro";
 import PricingTabs from "../components/PricingTabs";
 import PricingComparisonTable from "../components/PricingComparisonTable";
 
@@ -269,100 +272,64 @@ const description =
 
   <!-- Modal Container -->
   <div id="modal-root"></div>
+  <VoiceDemoModal />
+  <BookDemoModal />
+  <CalendlyModal />
 </Layout>
 
 <script>
-  // Book Demo Modal Integration
-  import BookDemoModal from "../components/BookDemoModal";
-  import CalendlyModal from "../components/CalendlyModal";
+  // Book Demo Modal Integration (using Astro modals)
   import {
     getCalendlyUrl,
     buildCalendlyUrl,
     getCurrentUrlParams,
   } from "../utils/calendly";
 
-  let bookDemoRoot: any = null;
-  let calendlyRoot: any = null;
-  let bookDemoModalOpen = false;
-  let calendlyModalOpen = false;
-  const modalContainer = document.getElementById("modal-root");
+  const bookDemoDialog = document.getElementById('book-demo-modal');
+  const calendlyDialog = document.getElementById('calendly-modal');
 
-  async function renderBookDemoModal(isOpen: boolean, onFormSubmit?: any) {
-    if (!modalContainer) return;
+  // Open Book Demo modal
+  function openBookDemoModal() {
+    bookDemoDialog?.dispatchEvent(new CustomEvent('dialog:open'));
+  }
 
-    const [{ createRoot }, React] = await Promise.all([
-      import("react-dom/client"),
-      import("react"),
-    ]);
+  // Close Book Demo modal
+  function closeBookDemoModal() {
+    bookDemoDialog?.dispatchEvent(new CustomEvent('dialog:close'));
+  }
 
-    if (!bookDemoRoot) {
-      bookDemoRoot = createRoot(modalContainer);
-    }
+  // Open Calendly modal
+  function openCalendlyModal(url: string) {
+    window.dispatchEvent(new CustomEvent('calendly:set-url', { detail: url }));
+    calendlyDialog?.dispatchEvent(new CustomEvent('dialog:open'));
+  }
 
-    bookDemoRoot.render(
-      React.createElement(BookDemoModal, {
-        isOpen,
-        onClose: () => {
-          bookDemoModalOpen = false;
-          renderBookDemoModal(false);
-        },
-        onFormSubmit,
-      }),
+  // Close Calendly modal
+  function closeCalendlyModal() {
+    calendlyDialog?.dispatchEvent(new CustomEvent('dialog:close'));
+  }
+
+  // Listen for form submission from BookDemoModal
+  window.addEventListener('book-demo-form-submit', async (event: CustomEvent) => {
+    const formData = event.detail as any;
+    console.log('Form submitted with data:', formData);
+
+    const baseUrl = await getCalendlyUrl(
+      formData.phone || '',
+      formData.email || '',
     );
-  }
 
-  async function renderCalendlyModal(isOpen: boolean, url: string = "") {
-    if (!modalContainer) return;
+    const utmParams = getCurrentUrlParams();
+    const calendlyUrl = buildCalendlyUrl(baseUrl, formData, utmParams);
 
-    const [{ createRoot }, React] = await Promise.all([
-      import("react-dom/client"),
-      import("react"),
-    ]);
+    console.log('Opening Calendly:', calendlyUrl);
 
-    if (!calendlyRoot) {
-      const tempDiv = document.createElement("div");
-      modalContainer.appendChild(tempDiv);
-      calendlyRoot = createRoot(tempDiv);
-    }
+    closeBookDemoModal();
 
-    calendlyRoot.render(
-      React.createElement(CalendlyModal, {
-        isOpen,
-        calendlyUrl: url,
-        onClose: () => {
-          calendlyModalOpen = false;
-          renderCalendlyModal(false);
-        },
-      }),
-    );
-  }
-
-  async function openBookDemoModal() {
-    if (bookDemoModalOpen) return;
-    bookDemoModalOpen = true;
-
-    await renderBookDemoModal(true, async (formData: any) => {
-      console.log("Form submitted with data:", formData);
-
-      const baseUrl = await getCalendlyUrl(
-        formData.phone || "",
-        formData.email || "",
-      );
-
-      const utmParams = getCurrentUrlParams();
-      const calendlyUrl = buildCalendlyUrl(baseUrl, formData, utmParams);
-
-      console.log("Opening Calendly:", calendlyUrl);
-
-      bookDemoModalOpen = false;
-      await renderBookDemoModal(false);
-
-      setTimeout(() => {
-        calendlyModalOpen = true;
-        renderCalendlyModal(true, calendlyUrl);
-      }, 300);
-    });
-  }
+    setTimeout(() => {
+      openCalendlyModal(calendlyUrl);
+    }, 300);
+  });
 
   // Listen for modal events
   window.addEventListener("openBookDemoModal", openBookDemoModal);

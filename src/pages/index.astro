@@ -1,8 +1,10 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import FAQ from "../components/FAQ";
-import ComparisonTable from "../components/ComparisonTable";
-import ColorButton from "../components/ColorButton.astro";
+import Layout from "@/layouts/Layout.astro";
+import FAQ from "@/components/FAQ.tsx";
+import ComparisonTable from "@/components/ComparisonTable";
+import ColorButton from "@/components/ColorButton.astro";
+import BookDemoModal from "@/components/BookDemoModal.astro";
+import CalendlyModal from "@/components/CalendlyModal.astro";
 
 const title = "AI Agents Orchestration Platform | Astra by Wati";
 const description =
@@ -611,81 +613,48 @@ const description =
     </div>
   </section>
 
-  <!-- Modals rendered by React -->
-  <div id="modal-root"></div>
+  <!-- Modals -->
+  <BookDemoModal />
+  <CalendlyModal />
 </Layout>
 
 <script>
-  // Book Demo Modal Flow with HubSpot + Calendly
-  import BookDemoModal from "../components/BookDemoModal";
-  import CalendlyModal from "../components/CalendlyModal";
   import {
     getCalendlyUrl,
     buildCalendlyUrl,
     getCurrentUrlParams,
   } from "../utils/calendly";
 
-  let bookDemoModalOpen = false;
-  let calendlyModalOpen = false;
-  let bookDemoRoot: any = null;
-  let calendlyRoot: any = null;
-  const modalContainer = document.getElementById("modal-root");
+  const bookDemoDialog = document.getElementById("book-demo-modal");
+  const calendlyDialog = document.getElementById("calendly-modal");
 
-  async function renderBookDemoModal(isOpen: boolean, onFormSubmit?: any) {
-    if (!modalContainer) return;
-
-    const [{ createRoot }, React] = await Promise.all([
-      import("react-dom/client"),
-      import("react"),
-    ]);
-
-    if (!bookDemoRoot) {
-      bookDemoRoot = createRoot(modalContainer);
-    }
-
-    bookDemoRoot.render(
-      React.createElement(BookDemoModal, {
-        isOpen,
-        onClose: () => {
-          bookDemoModalOpen = false;
-          renderBookDemoModal(false);
-        },
-        onFormSubmit,
-      }),
-    );
+  // Open Book Demo modal
+  function openBookDemoModal() {
+    bookDemoDialog?.dispatchEvent(new CustomEvent("dialog:open"));
   }
 
-  async function renderCalendlyModal(isOpen: boolean, url: string = "") {
-    if (!modalContainer) return;
-
-    const [{ createRoot }, React] = await Promise.all([
-      import("react-dom/client"),
-      import("react"),
-    ]);
-
-    if (!calendlyRoot) {
-      const tempDiv = document.createElement("div");
-      modalContainer.appendChild(tempDiv);
-      calendlyRoot = createRoot(tempDiv);
-    }
-
-    calendlyRoot.render(
-      React.createElement(CalendlyModal, {
-        isOpen,
-        calendlyUrl: url,
-        onClose: () => {
-          calendlyModalOpen = false;
-          renderCalendlyModal(false);
-        },
-      }),
-    );
+  // Close Book Demo modal
+  function closeBookDemoModal() {
+    bookDemoDialog?.dispatchEvent(new CustomEvent("dialog:close"));
   }
 
-  async function openBookDemoModal() {
-    if (bookDemoModalOpen) return;
-    bookDemoModalOpen = true;
+  // Open Calendly modal
+  function openCalendlyModal(url: string) {
+    // Set the URL before opening
+    window.dispatchEvent(new CustomEvent("calendly:set-url", { detail: url }));
+    calendlyDialog?.dispatchEvent(new CustomEvent("dialog:open"));
+  }
 
-    await renderBookDemoModal(true, async (formData: any) => {
+  // Close Calendly modal
+  function closeCalendlyModal() {
+    calendlyDialog?.dispatchEvent(new CustomEvent("dialog:close"));
+  }
+
+  // Listen for form submission from BookDemoModal
+  window.addEventListener(
+    "book-demo-form-submit",
+    async (event: CustomEvent) => {
+      const formData = event.detail as any;
       console.log("Form submitted with data:", formData);
 
       // Get Calendly URL based on phone/email
@@ -701,16 +670,14 @@ const description =
       console.log("Opening Calendly:", calendlyUrl);
 
       // Close HubSpot modal
-      bookDemoModalOpen = false;
-      await renderBookDemoModal(false);
+      closeBookDemoModal();
 
       // Open Calendly modal after short delay
       setTimeout(() => {
-        calendlyModalOpen = true;
-        renderCalendlyModal(true, calendlyUrl);
+        openCalendlyModal(calendlyUrl);
       }, 300);
-    });
-  }
+    },
+  );
 
   // Listen for modal open events from header
   window.addEventListener("openBookDemoModal", openBookDemoModal);

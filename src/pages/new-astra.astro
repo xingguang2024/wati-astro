@@ -1,7 +1,10 @@
 ---
-import Layout from "../layouts/LayoutNoHeader.astro";
-import FAQ from "../components/FAQ";
-import ColorButton from "../components/ColorButton.astro";
+import Layout from "@/layouts/LayoutNoHeader.astro";
+import FAQ from "@/components/FAQ";
+import ColorButton from "@/components/ColorButton.astro";
+import VoiceDemoModal from "@/components/VoiceDemoModal.astro";
+import BookDemoModal from "@/components/BookDemoModal.astro";
+import CalendlyModal from "@/components/CalendlyModal.astro";
 
 const title = "AI Agents Orchestration Platform | Astra by Wati";
 const description =
@@ -10,9 +13,12 @@ const description =
 
 <Layout title={title} description={description}>
   <!-- Hero Section - Chatbase inspired clean design -->
-  <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+  <section
+    class="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
+  >
     <!-- Subtle gradient background -->
-    <div class="absolute inset-0 bg-gradient-to-b from-zinc-50 to-white -z-10"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-zinc-50 to-white -z-10">
+    </div>
 
     <div class="container mx-auto px-4 relative z-10">
       <!-- Wide screen: Grid layout with content left, video right -->
@@ -20,15 +26,24 @@ const description =
         <!-- Left: Content -->
         <div class="text-center lg:text-left order-1 lg:order-1">
           <!-- Badge -->
-          <div class="inline-flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-2 mb-8 shadow-sm">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span class="text-sm font-medium text-zinc-700">Now with Voice AI</span>
+          <div
+            class="inline-flex items-center gap-2 bg-white border border-zinc-200 rounded-full px-4 py-2 mb-8 shadow-sm"
+          >
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"
+            ></span>
+            <span class="text-sm font-medium text-zinc-700"
+              >Now with Voice AI</span
+            >
           </div>
 
           <!-- Headline -->
-          <h1 class="font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-zinc-900 mb-6">
+          <h1
+            class="font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-zinc-900 mb-6"
+          >
             Stop Losing Customers to Business Hours with your{" "}
-            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span
+              class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+            >
               Astra AI Agent
             </span>
             .
@@ -36,10 +51,11 @@ const description =
 
           <!-- Subheadline -->
           <p class="text-lg md:text-xl leading-relaxed text-zinc-600 mb-8">
-            The AI Agent Orchestration Platform that clones your best humans and knowledge base to
-            provide{" "}
+            The AI Agent Orchestration Platform that clones your best humans and
+            knowledge base to provide{" "}
             <span class="font-semibold text-zinc-900">24/7 support</span> and
-            <span class="font-semibold text-zinc-900"> lead qualification</span> for your business.
+            <span class="font-semibold text-zinc-900"> lead qualification</span>
+            for your business.
           </p>
 
           <!-- CTA -->
@@ -51,8 +67,19 @@ const description =
               class="inline-flex items-center gap-2 bg-zinc-900 text-white font-semibold text-lg px-8 py-4 rounded-xl hover:bg-zinc-800 transition-all hover:shadow-lg hover:-translate-y-0.5"
             >
               Try for Free
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.16663 10H15.8333M15.8333 10L9.99996 4.16667M15.8333 10L9.99996 15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4.16663 10H15.8333M15.8333 10L9.99996 4.16667M15.8333 10L9.99996 15.8333"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path>
               </svg>
             </a>
             <p class="text-sm text-zinc-500">No credit card required</p>
@@ -61,7 +88,9 @@ const description =
 
         <!-- Right: YouTube Video -->
         <div class="order-2 lg:order-2">
-          <div class="relative pb-[56.25%] h-0 overflow-hidden rounded-2xl shadow-2xl border border-zinc-200">
+          <div
+            class="relative pb-[56.25%] h-0 overflow-hidden rounded-2xl shadow-2xl border border-zinc-200"
+          >
             <iframe
               class="absolute top-0 left-0 w-full h-full"
               src="https://www.youtube.com/embed/HdTLh4loRB4?autoplay=1&mute=1&loop=1&playlist=HdTLh4loRB4"
@@ -69,8 +98,7 @@ const description =
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-            ></iframe>
+              allowfullscreen></iframe>
           </div>
         </div>
       </div>
@@ -82,7 +110,9 @@ const description =
     <div class="container mx-auto px-4">
       <div class="text-center mb-16">
         <ColorButton>Why Astra</ColorButton>
-        <h2 class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6">
+        <h2
+          class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6"
+        >
           Why world's best teams choose Astra
         </h2>
         <p class="text-xl text-zinc-600 max-w-2xl mx-auto">
@@ -91,39 +121,88 @@ const description =
       </div>
 
       <div class="grid md:grid-cols-3 gap-8 max-w-8xl mx-auto">
-        <div class="bg-zinc-50 rounded-2xl p-8 text-center hover:shadow-md transition-shadow">
-          <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <svg class="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        <div
+          class="bg-zinc-50 rounded-2xl p-8 text-center hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6"
+          >
+            <svg
+              class="w-8 h-8 text-blue-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              ></path>
             </svg>
           </div>
-          <h3 class="font-bold text-xl text-zinc-900 mb-3">Near-human conversations</h3>
+          <h3 class="font-bold text-xl text-zinc-900 mb-3">
+            Near-human conversations
+          </h3>
           <p class="text-base text-zinc-600 leading-relaxed">
-            Astra listens, pauses, and responds like a real human — engaging users with empathy and precision.
+            Astra listens, pauses, and responds like a real human — engaging
+            users with empathy and precision.
           </p>
         </div>
 
-        <div class="bg-zinc-50 rounded-2xl p-8 text-center hover:shadow-md transition-shadow">
-          <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <svg class="w-8 h-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <div
+          class="bg-zinc-50 rounded-2xl p-8 text-center hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6"
+          >
+            <svg
+              class="w-8 h-8 text-purple-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
           </div>
-          <h3 class="font-bold text-xl text-zinc-900 mb-3">Real-time latency</h3>
+          <h3 class="font-bold text-xl text-zinc-900 mb-3">
+            Real-time latency
+          </h3>
           <p class="text-base text-zinc-600 leading-relaxed">
-            Handle unlimited conversations simultaneously. Respond instantly when customers reach out.
+            Handle unlimited conversations simultaneously. Respond instantly
+            when customers reach out.
           </p>
         </div>
 
-        <div class="bg-zinc-50 rounded-2xl p-8 text-center hover:shadow-md transition-shadow">
-          <div class="w-16 h-16 bg-gradient-to-br from-pink-100 to-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <svg class="w-8 h-8 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div
+          class="bg-zinc-50 rounded-2xl p-8 text-center hover:shadow-md transition-shadow"
+        >
+          <div
+            class="w-16 h-16 bg-gradient-to-br from-pink-100 to-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6"
+          >
+            <svg
+              class="w-8 h-8 text-pink-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
-          <h3 class="font-bold text-xl text-zinc-900 mb-3">Best-in-class accuracy</h3>
+          <h3 class="font-bold text-xl text-zinc-900 mb-3">
+            Best-in-class accuracy
+          </h3>
           <p class="text-base text-zinc-600 leading-relaxed">
-            Trained on your real data and business context, Astra consistently delivers precise, brand-aligned responses.
+            Trained on your real data and business context, Astra consistently
+            delivers precise, brand-aligned responses.
           </p>
         </div>
       </div>
@@ -137,26 +216,43 @@ const description =
         <div class="grid md:grid-cols-2 gap-12 items-center">
           <div class="order-2 md:order-1">
             <ColorButton>Build with Natural Language</ColorButton>
-            <h2 class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6">
+            <h2
+              class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6"
+            >
               Build with Natural Language, even your kid or mother can build.
             </h2>
             <p class="text-xl text-zinc-600 leading-relaxed mb-8">
-              Simply describe your agent (e.g., "Create a support agent"), and Astra drafts the logic.
-              You can change, edit, improve — all in natural language.
+              Simply describe your agent (e.g., "Create a support agent"), and
+              Astra drafts the logic. You can change, edit, improve — all in
+              natural language.
             </p>
 
             <!-- Example -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-zinc-200">
+            <div
+              class="bg-white rounded-2xl p-6 shadow-sm border border-zinc-200"
+            >
               <div class="flex items-start gap-3">
-                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <div
+                  class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                   </svg>
                 </div>
                 <div>
                   <p class="text-sm text-zinc-500 mb-1">Example prompt:</p>
                   <p class="text-zinc-900 font-medium italic">
-                    "Create an inbound sales agent that qualifies leads for my solar business and books appointments on Calendly."
+                    "Create an inbound sales agent that qualifies leads for my
+                    solar business and books appointments on Calendly."
                   </p>
                 </div>
               </div>
@@ -164,7 +260,9 @@ const description =
           </div>
 
           <div class="order-1 md:order-2">
-            <div class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 rounded-3xl p-8 aspect-square flex items-center justify-center">
+            <div
+              class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 rounded-3xl p-8 aspect-square flex items-center justify-center"
+            >
               <img
                 src="/images/ai-kf1.webp"
                 alt="Build with natural language"
@@ -183,7 +281,9 @@ const description =
       <div class="max-w-8xl mx-auto">
         <div class="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <div class="bg-gradient-to-br from-pink-100 via-orange-100 to-yellow-100 rounded-3xl p-8 aspect-square flex items-center justify-center">
+            <div
+              class="bg-gradient-to-br from-pink-100 via-orange-100 to-yellow-100 rounded-3xl p-8 aspect-square flex items-center justify-center"
+            >
               <img
                 src="/images/ai-kf2.webp"
                 alt="Train with any source"
@@ -194,47 +294,98 @@ const description =
 
           <div>
             <ColorButton>An Agent Just For You</ColorButton>
-            <h2 class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6">
+            <h2
+              class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6"
+            >
               An Agent just for You
             </h2>
             <p class="text-xl text-zinc-600 leading-relaxed mb-8">
-              Train with any source, upload your content, simply your website links, any document.
-              Astra learns your voice and logic, then engages users naturally.
+              Train with any source, upload your content, simply your website
+              links, any document. Astra learns your voice and logic, then
+              engages users naturally.
             </p>
 
             <!-- Training Sources -->
             <div class="grid grid-cols-2 gap-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div
+                  class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-zinc-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    ></path>
                   </svg>
                 </div>
                 <span class="text-zinc-700 font-medium">Documents</span>
               </div>
 
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                <div
+                  class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-zinc-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                    ></path>
                   </svg>
                 </div>
                 <span class="text-zinc-700 font-medium">Website</span>
               </div>
 
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <div
+                  class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-zinc-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    ></path>
                   </svg>
                 </div>
                 <span class="text-zinc-700 font-medium">CRM Data</span>
               </div>
 
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                <div
+                  class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-zinc-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    ></path>
                   </svg>
                 </div>
                 <span class="text-zinc-700 font-medium">Transcripts</span>
@@ -251,11 +402,14 @@ const description =
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto text-center">
         <ColorButton>Voice Agent</ColorButton>
-        <h2 class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6">
+        <h2
+          class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6"
+        >
           Don't just take our word. Talk to AI agents now.
         </h2>
         <p class="text-xl text-zinc-600 mb-10 max-w-2xl mx-auto">
-          Experience the world's most human AI voice engine. Zero latency. Infinite context. Multiple languages and accents.
+          Experience the world's most human AI voice engine. Zero latency.
+          Infinite context. Multiple languages and accents.
         </p>
 
         <!-- Voice Demo Trigger Button -->
@@ -263,8 +417,18 @@ const description =
           id="voiceDemoBtn"
           class="inline-flex items-center gap-3 bg-white border-2 border-zinc-900 text-zinc-900 font-semibold text-lg px-8 py-4 rounded-xl hover:bg-zinc-900 hover:text-white transition-all hover:shadow-lg hover:-translate-y-0.5"
         >
-          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+            ></path>
           </svg>
           Try Voice Demo
         </button>
@@ -277,8 +441,11 @@ const description =
     <div class="container mx-auto px-4">
       <div class="text-center mb-16">
         <ColorButton>How It Works</ColorButton>
-        <h2 class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6">
-          From telling to the idea of an AI agent to "live in your favorites channel" in mins.
+        <h2
+          class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6"
+        >
+          From telling to the idea of an AI agent to "live in your favorites
+          channel" in mins.
         </h2>
         <p class="text-xl text-zinc-600">
           You don't need code. You just need a conversation.
@@ -291,13 +458,23 @@ const description =
           <!-- Left: Accordion Items -->
           <div class="accordion join join-vertical w-full gap-3">
             <!-- Step 1 -->
-            <div class="collapse collapse-arrow join-item border border-zinc-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow" data-step="1">
+            <div
+              class="collapse collapse-arrow join-item border border-zinc-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow"
+              data-step="1"
+            >
               <input type="radio" name="feature-accordion" checked="checked" />
               <div class="collapse-title flex items-center gap-4 py-5 px-6">
-                <span class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 text-white font-bold rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                <span
+                  class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 text-white font-bold rounded-full flex items-center justify-center flex-shrink-0"
+                  >1</span
+                >
                 <div>
-                  <p class="text-sm text-zinc-500 font-medium mb-1">Build Fast</p>
-                  <h3 class="font-bold text-xl md:text-2xl text-zinc-900">Build with natural language</h3>
+                  <p class="text-sm text-zinc-500 font-medium mb-1">
+                    Build Fast
+                  </p>
+                  <h3 class="font-bold text-xl md:text-2xl text-zinc-900">
+                    Build with natural language
+                  </h3>
                 </div>
               </div>
               <div class="collapse-content px-6 pb-5">
@@ -305,7 +482,9 @@ const description =
                   Skip the complexity. Just describe what you need.
                 </p>
                 <!-- Mobile image -->
-                <div class="lg:hidden bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl p-4">
+                <div
+                  class="lg:hidden bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl p-4"
+                >
                   <img
                     src="/images/ai-kf1.webp"
                     alt="Build with natural language"
@@ -316,21 +495,34 @@ const description =
             </div>
 
             <!-- Step 2 -->
-            <div class="collapse collapse-arrow join-item border border-zinc-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow" data-step="2">
+            <div
+              class="collapse collapse-arrow join-item border border-zinc-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow"
+              data-step="2"
+            >
               <input type="radio" name="feature-accordion" />
               <div class="collapse-title flex items-center gap-4 py-5 px-6">
-                <span class="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-500 text-white font-bold rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                <span
+                  class="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-500 text-white font-bold rounded-full flex items-center justify-center flex-shrink-0"
+                  >2</span
+                >
                 <div>
-                  <p class="text-sm text-zinc-500 font-medium mb-1">Customize Faster</p>
-                  <h3 class="font-bold text-xl md:text-2xl text-zinc-900">Customize the "brain"</h3>
+                  <p class="text-sm text-zinc-500 font-medium mb-1">
+                    Customize Faster
+                  </p>
+                  <h3 class="font-bold text-xl md:text-2xl text-zinc-900">
+                    Customize the "brain"
+                  </h3>
                 </div>
               </div>
               <div class="collapse-content px-6 pb-5">
                 <p class="text-lg text-zinc-600 leading-relaxed mb-4">
-                  Upload your content. Astra learns your voice and logic, then engages users naturally.
+                  Upload your content. Astra learns your voice and logic, then
+                  engages users naturally.
                 </p>
                 <!-- Mobile image -->
-                <div class="lg:hidden bg-gradient-to-br from-pink-100 to-orange-100 rounded-2xl p-4">
+                <div
+                  class="lg:hidden bg-gradient-to-br from-pink-100 to-orange-100 rounded-2xl p-4"
+                >
                   <img
                     src="/images/ai-kf2.webp"
                     alt="Customize the brain"
@@ -341,21 +533,35 @@ const description =
             </div>
 
             <!-- Step 3 -->
-            <div class="collapse collapse-arrow join-item border border-zinc-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow" data-step="3">
+            <div
+              class="collapse collapse-arrow join-item border border-zinc-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow"
+              data-step="3"
+            >
               <input type="radio" name="feature-accordion" />
               <div class="collapse-title flex items-center gap-4 py-5 px-6">
-                <span class="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 text-white font-bold rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                <span
+                  class="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 text-white font-bold rounded-full flex items-center justify-center flex-shrink-0"
+                  >3</span
+                >
                 <div>
-                  <p class="text-sm text-zinc-500 font-medium mb-1">Deploy in Minutes</p>
-                  <h3 class="font-bold text-xl md:text-2xl text-zinc-900">Install agent easily</h3>
+                  <p class="text-sm text-zinc-500 font-medium mb-1">
+                    Deploy in Minutes
+                  </p>
+                  <h3 class="font-bold text-xl md:text-2xl text-zinc-900">
+                    Install agent easily
+                  </h3>
                 </div>
               </div>
               <div class="collapse-content px-6 pb-5">
                 <p class="text-lg text-zinc-600 leading-relaxed mb-4">
-                  One agent, every channel. Deploy to your website, WhatsApp, phone, SMS, and RCS. One continuous memory across all touch points.
+                  One agent, every channel. Deploy to your website, WhatsApp,
+                  phone, SMS, and RCS. One continuous memory across all touch
+                  points.
                 </p>
                 <!-- Mobile image -->
-                <div class="lg:hidden bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl p-4">
+                <div
+                  class="lg:hidden bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl p-4"
+                >
                   <img
                     src="/images/ai-kf3.webp"
                     alt="Install agent easily"
@@ -368,7 +574,10 @@ const description =
 
           <!-- Right: Image Display (Desktop only) -->
           <div class="hidden lg:block relative lg:sticky lg:top-8 h-fit">
-            <div id="feature-image-container" class="bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl p-6 md:p-8 shadow-xl transition-all duration-500">
+            <div
+              id="feature-image-container"
+              class="bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl p-6 md:p-8 shadow-xl transition-all duration-500"
+            >
               <img
                 id="feature-image"
                 src="/images/ai-kf1.webp"
@@ -383,31 +592,42 @@ const description =
   </section>
 
   <!-- Performance Section -->
-  <section class="py-12 bg-zinc-50 relative bg-[url('/images/world-map.svg')] bg-center bg-no-repeat bg-contain">
+  <section
+    class="py-12 bg-zinc-50 relative bg-[url('/images/world-map.svg')] bg-center bg-no-repeat bg-contain"
+  >
     <div class="container mx-auto px-4 relative z-10">
       <div class="text-center mb-16">
         <h2 class="font-semibold text-4xl md:text-5xl text-zinc-900 mb-4">
           Astra performance
         </h2>
         <p class="text-xl text-zinc-600">
-          Gain instant visibility into response rates, lead conversions, and engagement.
+          Gain instant visibility into response rates, lead conversions, and
+          engagement.
         </p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow">
+        <div
+          class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow"
+        >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">100%</p>
           <p class="text-lg text-zinc-600">Instant response</p>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow">
+        <div
+          class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow"
+        >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">24/7</p>
           <p class="text-lg text-zinc-600">Availability</p>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow">
+        <div
+          class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow"
+        >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">30+</p>
           <p class="text-lg text-zinc-600">Multi-language support</p>
         </div>
-        <div class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow">
+        <div
+          class="bg-white rounded-2xl shadow-sm p-8 text-center hover:shadow-md transition-shadow"
+        >
           <p class="text-5xl md:text-6xl font-bold text-zinc-900 mb-4">99%</p>
           <p class="text-lg text-zinc-600">User satisfaction</p>
         </div>
@@ -424,13 +644,16 @@ const description =
           What makes Astra different
         </h2>
         <p class="text-xl text-zinc-600 max-w-2xl mx-auto">
-          An intelligent layer that listens, acts, and learns across every customer touchpoint.
+          An intelligent layer that listens, acts, and learns across every
+          customer touchpoint.
         </p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-8xl mx-auto">
         <div class="group">
-          <div class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1">
+          <div
+            class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1"
+          >
             <img
               src="/images/card1.png"
               alt="Spotlight & Highlighter"
@@ -440,13 +663,16 @@ const description =
               Spotlight & Highlighter
             </h3>
             <p class="text-base text-zinc-600 leading-relaxed">
-              Ask questions directly from any page. Highlight text or spotlight content to chat instantly with AI.
+              Ask questions directly from any page. Highlight text or spotlight
+              content to chat instantly with AI.
             </p>
           </div>
         </div>
 
         <div class="group">
-          <div class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1">
+          <div
+            class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1"
+          >
             <img
               src="/images/card2.webp"
               alt="Go live everywhere"
@@ -456,13 +682,16 @@ const description =
               Go live everywhere
             </h3>
             <p class="text-base text-zinc-600 leading-relaxed">
-              Launch on Web, WhatsApp, or Voice in minutes. One click connects Astra wherever your customers are.
+              Launch on Web, WhatsApp, or Voice in minutes. One click connects
+              Astra wherever your customers are.
             </p>
           </div>
         </div>
 
         <div class="group">
-          <div class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1">
+          <div
+            class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1"
+          >
             <img
               src="/images/card3.webp"
               alt="Universal voice"
@@ -472,13 +701,16 @@ const description =
               Universal voice
             </h3>
             <p class="text-base text-zinc-600 leading-relaxed">
-              Speak and text fluidly in 30+ languages. Astra adapts to accents and switches languages on the fly.
+              Speak and text fluidly in 30+ languages. Astra adapts to accents
+              and switches languages on the fly.
             </p>
           </div>
         </div>
 
         <div class="group">
-          <div class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1">
+          <div
+            class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1"
+          >
             <img
               src="/images/card4.webp"
               alt="AI actions and tool calling"
@@ -488,13 +720,16 @@ const description =
               AI actions and tool calling
             </h3>
             <p class="text-base text-zinc-600 leading-relaxed">
-              Move beyond chat. Astra books meetings, updates CRMs, and triggers workflows through your connected tools.
+              Move beyond chat. Astra books meetings, updates CRMs, and triggers
+              workflows through your connected tools.
             </p>
           </div>
         </div>
 
         <div class="group">
-          <div class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1">
+          <div
+            class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1"
+          >
             <img
               src="/images/card5.webp"
               alt="Leads and insights"
@@ -504,13 +739,16 @@ const description =
               Leads and insights
             </h3>
             <p class="text-base text-zinc-600 leading-relaxed">
-              Convert conversations into qualified leads and clear insights to power smarter decisions.
+              Convert conversations into qualified leads and clear insights to
+              power smarter decisions.
             </p>
           </div>
         </div>
 
         <div class="group">
-          <div class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1">
+          <div
+            class="bg-zinc-50 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-1"
+          >
             <img
               src="/images/card6.webp"
               alt="Robust analytics"
@@ -520,7 +758,8 @@ const description =
               Robust analytics
             </h3>
             <p class="text-base text-zinc-600 leading-relaxed">
-              Track conversation quality, flows, and conversions with built-in analytics that turn engagement into growth.
+              Track conversation quality, flows, and conversions with built-in
+              analytics that turn engagement into growth.
             </p>
           </div>
         </div>
@@ -533,121 +772,237 @@ const description =
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
         <ColorButton class="white">Why Build With Astra</ColorButton>
-        <h2 class="font-medium text-3xl md:text-4xl lg:text-5xl leading-tight text-white mb-4 max-w-4xl mx-auto">
+        <h2
+          class="font-medium text-3xl md:text-4xl lg:text-5xl leading-tight text-white mb-4 max-w-4xl mx-auto"
+        >
           The old chatbots vs new agents
         </h2>
         <p class="text-xl text-zinc-400 max-w-3xl mx-auto">
-          Astra agents understand intent, act instantly, and move your business forward.
+          Astra agents understand intent, act instantly, and move your business
+          forward.
         </p>
       </div>
 
       <!-- Desktop Table -->
       <div class="hidden md:block mt-16">
         <div class="overflow-x-auto">
-          <table class="w-full border-separate border-spacing-0 bg-transparent text-white rounded-sm">
+          <table
+            class="w-full border-separate border-spacing-0 bg-transparent text-white rounded-sm"
+          >
             <thead>
               <tr class="bg-zinc-950">
-                <th class="py-4 px-6 text-left font-medium text-xl border-b border-zinc-800">
+                <th
+                  class="py-4 px-6 text-left font-medium text-xl border-b border-zinc-800"
+                >
                   Feature
                 </th>
-                <th class="py-4 px-6 text-center font-medium text-xl border-b border-zinc-800">
+                <th
+                  class="py-4 px-6 text-center font-medium text-xl border-b border-zinc-800"
+                >
                   <div>Traditional Chatbot</div>
                 </th>
-                <th class="py-4 px-6 text-center font-medium text-xl border-b border-zinc-800">
+                <th
+                  class="py-4 px-6 text-center font-medium text-xl border-b border-zinc-800"
+                >
                   <div>Other AI Agent</div>
                 </th>
-                <th class="py-4 px-6 text-center font-medium text-xl border-b border-zinc-800 relative">
+                <th
+                  class="py-4 px-6 text-center font-medium text-xl border-b border-zinc-800 relative"
+                >
                   <div class="colored-head">Astra AI Agent</div>
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr class="bg-transparent">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">How They're Built</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Scripts and flows</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Prompts + config</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Natural language builder. Just describe the agent.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300"
+                  >How They're Built</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Scripts and flows</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Prompts + config</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Natural language builder. Just describe the agent.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-zinc-800">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Training</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Limited FAQs</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Needs prompt tuning</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Train with any source. Docs, CRM, FAQs, transcripts.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Training</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Limited FAQs</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Needs prompt tuning</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Train with any source. Docs, CRM, FAQs, transcripts.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-transparent">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Understanding</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Keyword based</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Basic NLP</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Near human intent + context understanding.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300"
+                  >Understanding</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Keyword based</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Basic NLP</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Near human intent + context understanding.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-zinc-800">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Voice Quality</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Robotic</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Semi natural</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Human-like voice AI with real-time latency and accent support.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300"
+                  >Voice Quality</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Robotic</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Semi natural</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Human-like voice AI with real-time latency and accent
+                    support.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-transparent">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Languages</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">1-2 languages</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Some coverage</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Switch languages live. 12+ supported.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300"
+                  >Languages</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >1-2 languages</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Some coverage</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Switch languages live. 12+ supported.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-zinc-800">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Channels</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Mostly web only</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Few channels</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Web, WhatsApp, and Voice calls in one brain.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Channels</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Mostly web only</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Few channels</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Web, WhatsApp, and Voice calls in one brain.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-transparent">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Action Taking</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">No real actions</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Limited actions</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Adaptive logic and tool calling that learns continuously</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300"
+                  >Action Taking</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >No real actions</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Limited actions</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Adaptive logic and tool calling that learns continuously
+                  </div>
                 </td>
               </tr>
               <tr class="bg-zinc-800">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Integrations</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Hard to set up</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Partial support + tech requirement</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Direct integrations across HubSpot, Salesforce, Shopify.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300"
+                  >Integrations</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Hard to set up</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Partial support + tech requirement</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Direct integrations across HubSpot, Salesforce, Shopify.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-transparent">
                 <td class="py-5 px-6 border-zinc-800 text-zinc-300">Memory</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Forgets everything</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Short session memory</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">Unified long-term memory across chats and calls.</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Forgets everything</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Short session memory</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    Unified long-term memory across chats and calls.
+                  </div>
                 </td>
               </tr>
               <tr class="bg-zinc-800">
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300">Who Can Build</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Tech teams</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Developers</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300"
+                  >Who Can Build</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Tech teams</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Developers</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
                   <div class="relative z-10">Anyone.</div>
                 </td>
               </tr>
               <tr class="bg-transparent">
                 <td class="py-5 px-6 border-zinc-800 text-zinc-300">Outcome</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Answers questions</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center">Better replies</td>
-                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative">
-                  <div class="relative z-10">24/7 Support to your customers</div>
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Answers questions</td
+                >
+                <td class="py-5 px-6 border-zinc-800 text-zinc-300 text-center"
+                  >Better replies</td
+                >
+                <td
+                  class="py-5 px-6 border-zinc-800 text-zinc-300 text-center relative"
+                >
+                  <div class="relative z-10">
+                    24/7 Support to your customers
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -694,8 +1049,19 @@ const description =
           class="inline-flex items-center gap-2 bg-white text-zinc-900 font-semibold text-lg px-8 py-4 rounded-xl hover:bg-zinc-100 transition-all hover:shadow-lg hover:-translate-y-0.5"
         >
           Try for free
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4.16663 10H15.8333M15.8333 10L9.99996 4.16667M15.8333 10L9.99996 15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4.16663 10H15.8333M15.8333 10L9.99996 4.16667M15.8333 10L9.99996 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
       </div>
@@ -722,8 +1088,19 @@ const description =
           class="inline-flex items-center gap-2 border-2 border-zinc-300 text-zinc-900 font-semibold text-lg px-8 py-4 rounded-xl hover:border-zinc-400 hover:shadow-md transition-all"
         >
           Try for free
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3.33337 7.99992H12.6667M12.6667 7.99992L8.00004 3.33325M12.6667 7.99992L8.00004 12.6666" stroke="#27272A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3.33337 7.99992H12.6667M12.6667 7.99992L8.00004 3.33325M12.6667 7.99992L8.00004 12.6666"
+              stroke="#27272A"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
       </div>
@@ -734,11 +1111,14 @@ const description =
   <section class="py-12 bg-white">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto text-center">
-        <h2 class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6">
+        <h2
+          class="font-semibold text-4xl md:text-5xl leading-tight text-zinc-900 mb-6"
+        >
           Ready to transform your customer engagement?
         </h2>
         <p class="text-xl text-zinc-600 mb-10 max-w-2xl mx-auto">
-          Join thousands of businesses using Astra to provide 24/7 support and capture more leads.
+          Join thousands of businesses using Astra to provide 24/7 support and
+          capture more leads.
         </p>
 
         <a
@@ -748,8 +1128,19 @@ const description =
           class="inline-flex items-center gap-3 bg-zinc-900 text-white font-semibold text-lg px-10 py-5 rounded-xl hover:bg-zinc-800 transition-all hover:shadow-xl hover:-translate-y-1"
         >
           Try for free
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4.16663 10H15.8333M15.8333 10L9.99996 4.16667M15.8333 10L9.99996 15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4.16663 10H15.8333M15.8333 10L9.99996 4.16667M15.8333 10L9.99996 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
           </svg>
         </a>
 
@@ -760,65 +1151,136 @@ const description =
 
   <!-- Modals rendered by React -->
   <div id="modal-root"></div>
+  <VoiceDemoModal />
+  <BookDemoModal />
+  <CalendlyModal />
 </Layout>
 
 <script>
   // Comparison data for mobile tabs
   const comparisonData = [
-    { feature: "How They're Built", traditional: "Scripts and flows", other: "Prompts + config", astra: "Natural language builder. Just describe the agent." },
-    { feature: "Training", traditional: "Limited FAQs", other: "Needs prompt tuning", astra: "Train with any source. Docs, CRM, FAQs, transcripts." },
-    { feature: "Understanding", traditional: "Keyword based", other: "Basic NLP", astra: "Near human intent + context understanding." },
-    { feature: "Voice Quality", traditional: "Robotic", other: "Semi natural", astra: "Human-like voice AI with real-time latency and accent support." },
-    { feature: "Languages", traditional: "1-2 languages", other: "Some coverage", astra: "Switch languages live. 12+ supported." },
-    { feature: "Channels", traditional: "Mostly web only", other: "Few channels", astra: "Web, WhatsApp, and Voice calls in one brain." },
-    { feature: "Action Taking", traditional: "No real actions", other: "Limited actions", astra: "Adaptive logic and tool calling that learns continuously" },
-    { feature: "Integrations", traditional: "Hard to set up", other: "Partial support + tech requirement", astra: "Direct integrations across HubSpot, Salesforce, Shopify." },
-    { feature: "Memory", traditional: "Forgets everything", other: "Short session memory", astra: "Unified long-term memory across chats and calls." },
-    { feature: "Who Can Build", traditional: "Tech teams", other: "Developers", astra: "Anyone." },
-    { feature: "Outcome", traditional: "Answers questions", other: "Better replies", astra: "24/7 Support to your customers" }
+    {
+      feature: "How They're Built",
+      traditional: "Scripts and flows",
+      other: "Prompts + config",
+      astra: "Natural language builder. Just describe the agent.",
+    },
+    {
+      feature: "Training",
+      traditional: "Limited FAQs",
+      other: "Needs prompt tuning",
+      astra: "Train with any source. Docs, CRM, FAQs, transcripts.",
+    },
+    {
+      feature: "Understanding",
+      traditional: "Keyword based",
+      other: "Basic NLP",
+      astra: "Near human intent + context understanding.",
+    },
+    {
+      feature: "Voice Quality",
+      traditional: "Robotic",
+      other: "Semi natural",
+      astra: "Human-like voice AI with real-time latency and accent support.",
+    },
+    {
+      feature: "Languages",
+      traditional: "1-2 languages",
+      other: "Some coverage",
+      astra: "Switch languages live. 12+ supported.",
+    },
+    {
+      feature: "Channels",
+      traditional: "Mostly web only",
+      other: "Few channels",
+      astra: "Web, WhatsApp, and Voice calls in one brain.",
+    },
+    {
+      feature: "Action Taking",
+      traditional: "No real actions",
+      other: "Limited actions",
+      astra: "Adaptive logic and tool calling that learns continuously",
+    },
+    {
+      feature: "Integrations",
+      traditional: "Hard to set up",
+      other: "Partial support + tech requirement",
+      astra: "Direct integrations across HubSpot, Salesforce, Shopify.",
+    },
+    {
+      feature: "Memory",
+      traditional: "Forgets everything",
+      other: "Short session memory",
+      astra: "Unified long-term memory across chats and calls.",
+    },
+    {
+      feature: "Who Can Build",
+      traditional: "Tech teams",
+      other: "Developers",
+      astra: "Anyone.",
+    },
+    {
+      feature: "Outcome",
+      traditional: "Answers questions",
+      other: "Better replies",
+      astra: "24/7 Support to your customers",
+    },
   ];
 
   // Mobile comparison tabs functionality
-  document.addEventListener('astro:page-load', () => {
-    const tabs = document.querySelectorAll('.comparison-tab');
-    const contentDiv = document.getElementById('comparison-content');
+  document.addEventListener("astro:page-load", () => {
+    const tabs = document.querySelectorAll(".comparison-tab");
+    const contentDiv = document.getElementById("comparison-content");
 
     function updateComparisonContent(tabName) {
-      const key = tabName === 'traditional' ? 'traditional' : tabName === 'other' ? 'other' : 'astra';
+      const key =
+        tabName === "traditional"
+          ? "traditional"
+          : tabName === "other"
+            ? "other"
+            : "astra";
 
       let html = '<div class="flex gap-0 text-left">';
       html += '<div class="flex-[45%]">';
-      html += '<div class="font-bold text-lg py-2.5 px-2.5 border border-zinc-700 border-t text-white">Feature</div>';
+      html +=
+        '<div class="font-bold text-lg py-2.5 px-2.5 border border-zinc-700 border-t text-white">Feature</div>';
 
-      comparisonData.forEach(item => {
+      comparisonData.forEach((item) => {
         html += `<div class="py-2.5 px-2.5 border border-zinc-700 border-t-0 text-white font-medium text-sm leading-5">${item.feature}</div>`;
       });
 
-      html += '</div>';
+      html += "</div>";
       html += '<div class="flex-[55%]">';
-      html += '<div class="invisible py-2.5 px-2.5 border border-zinc-700 border-t border-l-0 font-bold text-lg">Feature</div>';
+      html +=
+        '<div class="invisible py-2.5 px-2.5 border border-zinc-700 border-t border-l-0 font-bold text-lg">Feature</div>';
 
-      comparisonData.forEach(item => {
+      comparisonData.forEach((item) => {
         html += `<div class="py-2.5 px-2.5 border border-zinc-700 border-t-0 border-l-0 text-white font-light text-sm leading-5 flex items-center">${item[key]}</div>`;
       });
 
-      html += '</div></div>';
+      html += "</div></div>";
       contentDiv.innerHTML = html;
     }
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
         // Update active state
-        tabs.forEach(t => {
-          t.classList.remove('bg-white', 'text-black');
-          t.classList.add('text-white');
+        tabs.forEach((t) => {
+          t.classList.remove("bg-white", "text-black");
+          t.classList.add("text-white");
         });
-        tab.classList.remove('text-white');
+        tab.classList.remove("text-white");
 
-        if (tab.dataset.tab === 'astra') {
-          tab.classList.add('bg-gradient-to-r', 'from-blue-400', 'via-orange-400', 'to-pink-400', 'text-black');
+        if (tab.dataset.tab === "astra") {
+          tab.classList.add(
+            "bg-gradient-to-r",
+            "from-blue-400",
+            "via-orange-400",
+            "to-pink-400",
+            "text-black",
+          );
         } else {
-          tab.classList.add('bg-white', 'text-black');
+          tab.classList.add("bg-white", "text-black");
         }
 
         updateComparisonContent(tab.dataset.tab);
@@ -826,7 +1288,7 @@ const description =
     });
 
     // Initialize with traditional tab
-    updateComparisonContent('traditional');
+    updateComparisonContent("traditional");
   });
 </script>
 
@@ -834,40 +1296,40 @@ const description =
   // Feature Accordion - Image Switcher
   const featureImageData = {
     1: {
-      src: '/images/ai-kf1.webp',
-      alt: 'Build with natural language',
-      gradient: 'from-blue-100 to-purple-100'
+      src: "/images/ai-kf1.webp",
+      alt: "Build with natural language",
+      gradient: "from-blue-100 to-purple-100",
     },
     2: {
-      src: '/images/ai-kf2.webp',
-      alt: 'Customize the brain',
-      gradient: 'from-pink-100 to-orange-100'
+      src: "/images/ai-kf2.webp",
+      alt: "Customize the brain",
+      gradient: "from-pink-100 to-orange-100",
     },
     3: {
-      src: '/images/ai-kf3.webp',
-      alt: 'Install agent easily',
-      gradient: 'from-purple-100 to-blue-100'
-    }
+      src: "/images/ai-kf3.webp",
+      alt: "Install agent easily",
+      gradient: "from-purple-100 to-blue-100",
+    },
   };
 
   // Feature accordion functionality
-  document.addEventListener('astro:page-load', () => {
-    const accordionItems = document.querySelectorAll('[data-step]');
-    const featureImage = document.getElementById('feature-image');
-    const imageContainer = document.getElementById('feature-image-container');
+  document.addEventListener("astro:page-load", () => {
+    const accordionItems = document.querySelectorAll("[data-step]");
+    const featureImage = document.getElementById("feature-image");
+    const imageContainer = document.getElementById("feature-image-container");
 
-    accordionItems.forEach(item => {
-      const input = item.querySelector('input');
+    accordionItems.forEach((item) => {
+      const input = item.querySelector("input");
       if (!input) return;
 
-      input.addEventListener('change', () => {
+      input.addEventListener("change", () => {
         if (input.checked) {
-          const step = item.getAttribute('data-step');
+          const step = item.getAttribute("data-step");
           const data = featureImageData[step as keyof typeof featureImageData];
 
           if (data && featureImage && imageContainer) {
             // Fade out
-            featureImage.style.opacity = '0';
+            featureImage.style.opacity = "0";
 
             setTimeout(() => {
               // Update image
@@ -878,7 +1340,7 @@ const description =
               imageContainer.className = `bg-gradient-to-br ${data.gradient} rounded-3xl p-6 md:p-8 shadow-xl transition-all duration-500`;
 
               // Fade in
-              featureImage.style.opacity = '1';
+              featureImage.style.opacity = "1";
             }, 200);
           }
         }
@@ -888,180 +1350,61 @@ const description =
 </script>
 
 <script>
-  // Voice Demo Modal
-  import { createRoot } from "react-dom/client";
-  import React from "react";
-
-  interface VoiceDemoModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-  }
-
-  function VoiceDemoModal({ isOpen, onClose }: VoiceDemoModalProps) {
-    const dialogRef = React.useRef<HTMLDialogElement>(null);
-
-    React.useEffect(() => {
-      if (isOpen && dialogRef.current) {
-        dialogRef.current.showModal();
-        document.body.style.overflow = "hidden";
-      } else if (dialogRef.current && !isOpen) {
-        dialogRef.current.close();
-        document.body.style.overflow = "";
-      }
-
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }, [isOpen]);
-
-    const handleClose = () => {
-      document.body.style.overflow = "";
-      onClose();
-    };
-
-    if (!isOpen) return null;
-
-    return React.createElement(
-      "dialog",
-      {
-        ref: dialogRef,
-        id: "voiceDemoModal",
-        className: "modal",
-        onClick: (e: any) => {
-          if (e.target === dialogRef.current) {
-            handleClose();
-          }
-        },
-      },
-      React.createElement(
-        "div",
-        {
-          className: "w-[96%] lg:w-[960px] h-[646px] p-0 bg-white rounded-2xl shadow-2xl overflow-hidden",
-          onClick: (e: any) => e.stopPropagation(),
-        },
-        React.createElement("iframe", {
-          src: "https://dev-astra.watiapp.io/voice-demo",
-          allow: "microphone",
-          className: "w-full h-full border-0",
-        })
-      )
-    );
-  }
-
-  let voiceDemoModalOpen = false;
-  let voiceDemoRoot: any = null;
-  const modalContainer = document.getElementById("modal-root");
-
-  async function renderVoiceDemoModal(isOpen: boolean) {
-    if (!modalContainer) return;
-
-    if (!voiceDemoRoot) {
-      const tempDiv = document.createElement("div");
-      modalContainer.appendChild(tempDiv);
-      voiceDemoRoot = createRoot(tempDiv);
-    }
-
-    voiceDemoRoot.render(
-      React.createElement(VoiceDemoModal, {
-        isOpen,
-        onClose: () => {
-          voiceDemoModalOpen = false;
-          renderVoiceDemoModal(false);
-        },
-      })
-    );
-  }
-
-  // Handle voice demo button
+  // Handle voice demo button - opens starwind dialog modal
   const voiceDemoBtn = document.getElementById("voiceDemoBtn");
   if (voiceDemoBtn) {
     voiceDemoBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      if (!voiceDemoModalOpen) {
-        voiceDemoModalOpen = true;
-        renderVoiceDemoModal(true);
-      }
+      const voiceDemoDialog = document.getElementById("voice-demo-modal");
+      voiceDemoDialog?.dispatchEvent(new CustomEvent("dialog:open"));
     });
   }
 </script>
 
 <script>
-  // Book Demo Modal Flow with HubSpot + Calendly
-  import BookDemoModal from "../components/BookDemoModal";
-  import CalendlyModal from "../components/CalendlyModal";
+  // Book Demo Modal Flow with HubSpot + Calendly (using Astro modals)
   import {
     getCalendlyUrl,
     buildCalendlyUrl,
     getCurrentUrlParams,
   } from "../utils/calendly";
 
-  let bookDemoModalOpen = false;
-  let calendlyModalOpen = false;
-  let bookDemoRoot: any = null;
-  let calendlyRoot: any = null;
-  const modalContainer = document.getElementById("modal-root");
+  const bookDemoDialog = document.getElementById("book-demo-modal");
+  const calendlyDialog = document.getElementById("calendly-modal");
 
-  async function renderBookDemoModal(isOpen: boolean, onFormSubmit?: any) {
-    if (!modalContainer) return;
-
-    const [{ createRoot }, React] = await Promise.all([
-      import("react-dom/client"),
-      import("react"),
-    ]);
-
-    if (!bookDemoRoot) {
-      bookDemoRoot = createRoot(modalContainer);
-    }
-
-    bookDemoRoot.render(
-      React.createElement(BookDemoModal, {
-        isOpen,
-        onClose: () => {
-          bookDemoModalOpen = false;
-          renderBookDemoModal(false);
-        },
-        onFormSubmit,
-      })
-    );
+  // Open Book Demo modal
+  function openBookDemoModal() {
+    bookDemoDialog?.dispatchEvent(new CustomEvent("dialog:open"));
   }
 
-  async function renderCalendlyModal(isOpen: boolean, url: string = "") {
-    if (!modalContainer) return;
-
-    const [{ createRoot }, React] = await Promise.all([
-      import("react-dom/client"),
-      import("react"),
-    ]);
-
-    if (!calendlyRoot) {
-      const tempDiv = document.createElement("div");
-      modalContainer.appendChild(tempDiv);
-      calendlyRoot = createRoot(tempDiv);
-    }
-
-    calendlyRoot.render(
-      React.createElement(CalendlyModal, {
-        isOpen,
-        calendlyUrl: url,
-        onClose: () => {
-          calendlyModalOpen = false;
-          renderCalendlyModal(false);
-        },
-      })
-    );
+  // Close Book Demo modal
+  function closeBookDemoModal() {
+    bookDemoDialog?.dispatchEvent(new CustomEvent("dialog:close"));
   }
 
-  async function openBookDemoModal() {
-    if (bookDemoModalOpen) return;
-    bookDemoModalOpen = true;
+  // Open Calendly modal
+  function openCalendlyModal(url: string) {
+    // Set the URL before opening
+    window.dispatchEvent(new CustomEvent("calendly:set-url", { detail: url }));
+    calendlyDialog?.dispatchEvent(new CustomEvent("dialog:open"));
+  }
 
-    await renderBookDemoModal(true, async (formData: any) => {
+  // Close Calendly modal
+  function closeCalendlyModal() {
+    calendlyDialog?.dispatchEvent(new CustomEvent("dialog:close"));
+  }
+
+  // Listen for form submission from BookDemoModal
+  window.addEventListener(
+    "book-demo-form-submit",
+    async (event: CustomEvent) => {
+      const formData = event.detail as any;
       console.log("Form submitted with data:", formData);
 
       // Get Calendly URL based on phone/email
       const baseUrl = await getCalendlyUrl(
         formData.phone || "",
-        formData.email || ""
+        formData.email || "",
       );
 
       // Build complete URL with parameters
@@ -1071,23 +1414,21 @@ const description =
       console.log("Opening Calendly:", calendlyUrl);
 
       // Close HubSpot modal
-      bookDemoModalOpen = false;
-      await renderBookDemoModal(false);
+      closeBookDemoModal();
 
       // Open Calendly modal after short delay
       setTimeout(() => {
-        calendlyModalOpen = true;
-        renderCalendlyModal(true, calendlyUrl);
+        openCalendlyModal(calendlyUrl);
       }, 300);
-    });
-  }
+    },
+  );
 
   // Listen for modal open events from header
   window.addEventListener("openBookDemoModal", openBookDemoModal);
 
   // Handle page book demo buttons
   const bookDemoBtns = document.querySelectorAll(
-    "#bookDemoBtn, .book-demo-trigger"
+    "#bookDemoBtn, .book-demo-trigger",
   );
   bookDemoBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
