@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Blogs table (renamed from documents)
 CREATE TABLE IF NOT EXISTS blogs (
   id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
   content TEXT NOT NULL,
