@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     host: true,
     open: true,
-    port: 4321
+    port: 4321,
   },
   vite: {
     plugins: [
