@@ -8,11 +8,4 @@ export default {
       },
     },
   },
-  plugins: [require("daisyui")],
-  daisyui: {
-    themes: ["light"],
-    base: true,
-    styled: true,
-    utils: true,
-  },
 };

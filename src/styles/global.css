@@ -1,9 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "katex/dist/katex.min.css";
-
-@custom-variant dark (&:is(.dark *));
-@plugin "daisyui";
+@import "./starwind.css";
 
 @plugin "tailwind-scrollbar-hide";
 
@@ -328,4 +326,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.starwind-dialog-close {
+  display: none;
 }
