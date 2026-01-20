@@ -6,6 +6,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { codeInspectorPlugin } from "code-inspector-plugin";
 import { codeJumpPlugin } from "./vite-plugins/code-jump-plugin.ts";
+import path from "node:path";
 
 // https://astro.build/config
 export default defineConfig({
@@ -27,6 +28,11 @@ export default defineConfig({
     ],
     ssr: {
       noExternal: ["katex"],
+    },
+    resolve: {
+      alias: {
+        "@": path.resolve("./src"),
+      },
     },
   },
 

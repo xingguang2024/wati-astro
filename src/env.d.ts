@@ -2,7 +2,7 @@ type Runtime = import("@astrojs/cloudflare").Runtime<Env>;
 
 declare namespace App {
   interface Locals extends Runtime {
-    db?: ReturnType<typeof import('./db').createDB>
+    db?: any;
     kv?: import('@cloudflare/workers-types').KVNamespace
     r2?: import('@cloudflare/workers-types').R2Bucket
   }
