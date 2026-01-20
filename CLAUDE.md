@@ -167,11 +167,41 @@ if (!payload) return new Response('Invalid token', { status: 401 });
 ### Blog/CMS Pages
 - **blogs.astro** - Public blog listing (fetches from WordPress API)
 - **dashboard.astro** - CMS dashboard for managing user's blogs
-- **/blogs/new** - Create new blog post
+- **/blogs/new** - Create new blog post (WordPress-style editor)
 - **/blogs/[id]/edit** - Edit existing blog post
 - **/blogs/[id]** - View published blog post
 - **login.astro** - User login page
 - **register.astro** - User registration page
+
+### WordPress-Style Editor (`/blogs/new`)
+
+The blog creation page (`src/pages/blogs/new.astro`) provides a WordPress-like editing experience:
+
+**Layout:**
+- Fixed top toolbar with back, title, last saved time, focus mode toggle, preview, publish
+- Large title input (4xl) that auto-generates permalink
+- Main editor area with Plate.js rich text editor
+- Fixed right sidebar (320px) with collapsible panels:
+  - **Publish** - Status, visibility, save draft/publish buttons
+  - **Featured Image** - URL input with preview
+  - **Tags** - Add/remove tags with Enter or comma
+  - **Excerpt** - Custom excerpt with character count
+  - **Categories** - (placeholder for future)
+
+**Features:**
+- Focus mode (distraction-free writing, hides toolbar/sidebar)
+- Auto-save every 3 seconds to draft
+- Keyboard shortcuts: `Ctrl+S` save, `Ctrl+Shift+P` publish, `ESC` exit focus mode
+- Unsaved changes warning on navigation
+- Real-time cover image preview
+- Tag management with visual chips
+
+**Data Flow:**
+1. User enters title → permalink auto-generated from title
+2. Content changes → dispatched as `editor-content-change` event
+3. Auto-save triggers → creates new blog via `POST /api/blogs`
+4. After creation → URL updates to `/blogs/:id/edit`
+5. Subsequent saves → updates via `PUT /api/blogs/:id`
 
 ### Editor
 - **editor.astro** - Standalone rich text editor with AI features
@@ -185,13 +215,24 @@ Server-side endpoints in `src/pages/api/` use Astro's file-based routing:
 
 **Important**: All API routes must set `export const prerender = false;` to enable server-side execution on Cloudflare Pages.
 
+**Astro Routing Convention**: Routes are defined as `path.ts` or `path/index.ts`, NOT `path/route.ts`.
+- ✅ Correct: `src/pages/api/blogs.ts`
+- ✅ Correct: `src/pages/api/blogs/[id].ts`
+- ❌ Wrong: `src/pages/api/blogs/route.ts` (will return 404)
+- ❌ Wrong: `src/pages/api/blogs/[id]/route.ts` (will return 404)
+
 ### AI Endpoints
 - **`/api/ai/command`** - AI command endpoint for editor operations (generate, edit, comment)
 - **`/api/ai/copilot`** - AI copilot endpoint for editor assistance
 
 ### CMS Endpoints
 - **`GET /api/blogs`** - List current user's blogs (supports `?status=` filter)
+  - Super admin (userId="super-admin") sees all blogs
+  - Regular users see only their own blogs
 - **`POST /api/blogs`** - Create new blog
+  - Super admin: `user_id` set to `null`
+  - Regular users: `user_id` set to their userId
+  - Auto-generates unique slug from title
 - **`GET /api/blogs/[id]`** - Get single blog
 - **`PUT /api/blogs/[id]`** - Update blog
 - **`DELETE /api/blogs/[id]`** - Delete blog
@@ -247,15 +288,29 @@ Optional environment variables for creating the initial admin account:
 - `ADMIN_FIRST_NAME` - Admin first name (default: "Admin")
 - `ADMIN_LAST_NAME` - Admin last name (default: "User")
 
-**After deployment**, create the admin account by calling:
+**Super admin uses a fixed `userId` of "super-admin"** and is authenticated via environment variables, not stored in the database. The super admin can:
+- Create/edit/view all blogs (blogs have nullable `user_id`)
+- Bypass regular user permission checks
+
+Login validates against `ADMIN_EMAIL` and `ADMIN_PASSWORD` first before checking the database.
+
+## Database Migrations
+
+Migrations are stored in `migrations/` directory:
+
 ```bash
-curl -X POST https://your-domain.com/api/seed-admin
+# Initialize local database
+bun run db:init:local
+
+# Initialize remote database
+bun run db:init:remote
+
+# Run migrations (for schema updates)
+bun run db:migrate:local
+bun run db:migrate:remote
 ```
 
-Or check if admin exists:
-```bash
-curl https://your-domain.com/api/seed-admin
-```
+**Important**: The `blogs.user_id` column is nullable to support super admin blogs. When a super admin creates a blog, `user_id` is set to `null` instead of a user reference.
 
 ## Cloudflare Pages Deployment
 

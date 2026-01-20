@@ -1,14 +1,14 @@
 ---
 /**
- * Blog Editor Page
+ * Blog Editor Page - WordPress Style Editor
  *
  * Displays the PlateEditor for editing a specific blog.
- * Fetches blog data on the server and passes it to the client component.
- * Only accessible to admin and editor roles.
+ * Features: fixed sidebar, focus mode, publish panel, tags, featured image, etc.
+ * Only accessible to authenticated admin and editor roles.
  */
 
 import Layout from "@/layouts/LayoutNoHeader.astro";
-import PlateEditor from "@/components/PlateEditor";
+import { PlateEditor } from "@/components/editor/plate-editor";
 import { AuthService } from "@/lib/auth";
 import { blogs } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -88,7 +88,7 @@ if (notFound) {
   return Astro.redirect("/admin");
 }
 
-// Parse content
+// Parse content and tags
 let initialContent;
 try {
   initialContent = blog ? JSON.parse(blog.content) : undefined;
@@ -96,68 +96,165 @@ try {
   initialContent = undefined;
 }
 
+// Parse tags
+let initialTags: string[] = [];
+try {
+  initialTags = blog?.tags ? JSON.parse(blog.tags) : [];
+} catch {
+  initialTags = [];
+}
+
 const title = blog ? `Edit - ${blog.title}` : "Edit Blog";
 const description = blog?.excerpt || `Edit ${blog?.title || "blog"}`;
 ---
 
 <Layout title={title} description={description}>
-  <div class="min-h-screen bg-zinc-50 pt-20">
-    <!-- Editor Header -->
-    <header class="bg-white border-b border-zinc-200">
-      <div class="container mx-auto px-4 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <a
-              href="/admin"
-              class="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
-              title="Back to blogs"
+  <div class="min-h-screen bg-zinc-100" id="editorPage">
+    <!-- Top Toolbar -->
+    <header
+      id="topToolbar"
+      class="fixed top-0 left-0 right-0 bg-white border-b border-zinc-200 z-40 transition-transform duration-300"
+    >
+      <div class="flex items-center justify-between px-4 py-2">
+        <!-- Left: Back & Title -->
+        <div class="flex items-center gap-3">
+          <a
+            href="/admin"
+            class="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+            title="Back to dashboard"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-zinc-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-zinc-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+          </a>
+          <div>
+            <h1 class="text-lg font-semibold text-zinc-900" id="headerTitle">
+              {blog?.title || "Untitled"}
+            </h1>
+            <p class="text-xs text-zinc-500" id="lastSavedInfo">
+              Last saved: {blog?.updatedAt ? new Date(Number(blog.updatedAt)).toLocaleString() : "Never"}
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Focus Mode Toggle -->
+          <button
+            id="focusModeBtn"
+            class="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+            title="Focus Mode (Distraction-free writing)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-zinc-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+              ></path>
+            </svg>
+          </button>
+
+          <!-- Preview Button -->
+          <button
+            id="previewBtn"
+            class="px-4 py-2 border border-zinc-300 text-zinc-700 rounded-lg hover:bg-zinc-50 transition-colors text-sm font-medium"
+          >
+            Preview
+          </button>
+
+          <!-- Update Button -->
+          <button
+            id="publishBtn"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            Update
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex pt-14">
+      <!-- Editor Area -->
+      <main id="editorArea" class="flex-1 min-w-0 transition-all duration-300">
+        <div class="max-w-4xl mx-auto py-6 px-4">
+          <!-- Title Input -->
+          <input
+            type="text"
+            id="titleInput"
+            class="w-full text-4xl font-bold text-zinc-900 placeholder-zinc-400 border-none focus:outline-none focus:ring-0 bg-transparent mb-4"
+            placeholder="Add title"
+            value={blog?.title || ""}
+          />
+
+          <!-- Permalink -->
+          <div
+            id="permalinkSection"
+            class="mb-4 pb-4 border-b border-zinc-200"
+          >
+            <p class="text-sm text-zinc-500 mb-1">Permalink:</p>
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-zinc-500">/blogs/</span>
+              <input
+                type="text"
+                id="slugInput"
+                class="flex-1 px-2 py-1 text-sm border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="url-slug"
+                value={blog?.slug || ""}
+              />
+              <button
+                id="editSlugBtn"
+                class="text-sm text-blue-600 hover:text-blue-700"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-              </svg>
-            </a>
-            <div>
-              <h1 class="text-xl font-semibold text-zinc-900" id="blogTitle">
-                {blog?.title || "Untitled"}
-              </h1>
-              <p class="text-sm text-zinc-500">
-                Status: <span id="blogStatus" class="font-medium capitalize"
-                  >{blog?.status || "draft"}</span
-                >
-              </p>
+                Edit
+              </button>
             </div>
           </div>
-          <div class="flex items-center gap-3">
-            <!-- Status Toggle -->
-            <select
-              id="statusSelect"
-              class="px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="draft" selected={blog?.status === "draft"}
-                >Draft</option
-              >
-              <option value="published" selected={blog?.status === "published"}
-                >Published</option
-              >
-              <option value="archived" selected={blog?.status === "archived"}
-                >Archived</option
-              >
-            </select>
 
-            <!-- Save Button -->
+          <!-- Plate Editor -->
+          <div
+            class="bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden"
+          >
+            <PlateEditor
+              client:only="react"
+              initialValue={initialContent}
+              onSave={undefined}
+              useR2Upload={true}
+            />
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Sidebar -->
+      <aside
+        id="sidebar"
+        class="w-80 bg-white border-l border-zinc-200 p-4 overflow-y-auto transition-all duration-300"
+        style="height: calc(100vh - 56px);"
+      >
+        <!-- Publish Panel -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-zinc-900">Publish</h3>
             <button
-              id="saveBtn"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+              id="togglePublishPanel"
+              class="text-zinc-500 hover:text-zinc-700"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -170,111 +267,400 @@ const description = blog?.excerpt || `Edit ${blog?.title || "blog"}`;
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                ></path>
+                  d="M19 9l-7 7-7-7"></path>
               </svg>
-              Save
             </button>
+          </div>
 
-            <!-- Auto-save indicator -->
+          <div id="publishPanelContent" class="space-y-3">
+            <!-- Status -->
             <div
-              id="autoSaveIndicator"
-              class="hidden flex items-center gap-2 text-sm text-zinc-500"
+              class="flex items-center justify-between py-2 border-b border-zinc-100"
             >
-              <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse">
-              </div>
-              Saving...
+              <span class="text-sm text-zinc-600">Status</span>
+              <span id="statusDisplay" class="text-sm font-medium text-zinc-900"
+                >{blog?.status || "draft"}</span
+              >
+            </div>
+
+            <!-- Visibility -->
+            <div
+              class="flex items-center justify-between py-2 border-b border-zinc-100"
+            >
+              <span class="text-sm text-zinc-600">Visibility</span>
+              <select
+                id="visibilitySelect"
+                class="text-sm border border-zinc-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+                <option value="password">Password Protected</option>
+              </select>
+            </div>
+
+            <!-- Status Toggle -->
+            <div class="pt-2 space-y-2">
+              <select
+                id="statusSelect"
+                class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="draft" selected={blog?.status === "draft"}
+                  >Draft</option
+                >
+                <option value="published" selected={blog?.status === "published"}
+                  >Published</option
+                >
+                <option value="archived" selected={blog?.status === "archived"}
+                  >Archived</option
+              >
+              </select>
+              <button
+                id="saveBtn"
+                class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                Update
+              </button>
             </div>
           </div>
         </div>
-      </div>
-    </header>
 
-    <!-- Editor Container -->
-    <main class="container mx-auto px-4 py-8">
-      <div
-        class="bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden"
-      >
-        <div id="editor-container" data-blog-id={id}>
-          <PlateEditor
-            client:load
-            documentId={id}
-            initialValue={initialContent}
-            onSave={undefined}
-            useR2Upload={true}
-          />
+        <!-- Featured Image Panel -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-zinc-900">Featured Image</h3>
+            <button
+              id="toggleFeaturedImage"
+              class="text-zinc-500 hover:text-zinc-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div id="featuredImageContent" class="hidden">
+            <div id="featuredImagePreview" class="mb-3 {(blog?.coverImage || false) ? '' : 'hidden'}">
+              <img
+                id="featuredImageImg"
+                alt="Featured image"
+                class="w-full h-40 object-cover rounded-lg"
+                src={blog?.coverImage || ""}
+              />
+              <button
+                id="removeFeaturedImage"
+                class="mt-2 text-sm text-red-600 hover:text-red-700"
+              >
+                Remove image
+              </button>
+            </div>
+            <input
+              type="url"
+              id="featuredImageInput"
+              class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Image URL"
+              value={blog?.coverImage || ""}
+            />
+            <p class="text-xs text-zinc-500 mt-1">
+              Enter an image URL or use the editor to upload
+            </p>
+          </div>
         </div>
-      </div>
-    </main>
 
-    <!-- Toast Notification -->
+        <!-- Tags Panel -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-zinc-900">Tags</h3>
+            <button id="toggleTags" class="text-zinc-500 hover:text-zinc-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div id="tagsContent" class="hidden">
+            <div id="tagsList" class="flex flex-wrap gap-2 mb-2"></div>
+            <div class="flex gap-2">
+              <input
+                type="text"
+                id="tagInput"
+                class="flex-1 px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Add new tag"
+              />
+              <button
+                id="addTagBtn"
+                class="px-3 py-2 bg-zinc-100 text-zinc-700 rounded-lg hover:bg-zinc-200 text-sm"
+              >
+                Add
+              </button>
+            </div>
+            <p class="text-xs text-zinc-500 mt-2">
+              Separate tags with commas or press Enter
+            </p>
+          </div>
+        </div>
+
+        <!-- Excerpt Panel -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-zinc-900">Excerpt</h3>
+            <button
+              id="toggleExcerpt"
+              class="text-zinc-500 hover:text-zinc-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div id="excerptContent" class="hidden">
+            <textarea
+              id="excerptInput"
+              rows="4"
+              class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              placeholder="Excerpt is optional. Leave empty to auto-generate from content."
+            >{blog?.excerpt || ""}</textarea
+            <p class="text-xs text-zinc-500 mt-1">
+              <span id="excerptCount">{(blog?.excerpt || "").length}</span> characters
+            </p>
+          </div>
+        </div>
+
+        <!-- Categories Panel (Future) -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-zinc-900">Categories</h3>
+            <button
+              id="toggleCategories"
+              class="text-zinc-500 hover:text-zinc-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div id="categoriesContent" class="hidden">
+            <p class="text-sm text-zinc-500">Uncategorized</p>
+            <p class="text-xs text-zinc-400 mt-1">Categories coming soon</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div
+    id="toast"
+    class="fixed bottom-4 right-4 z-50 transform translate-y-20 opacity-0 transition-all duration-300"
+  >
     <div
-      id="toast"
-      class="fixed bottom-4 right-4 transform translate-y-20 opacity-0 transition-all duration-300 z-50"
+      class="bg-zinc-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3"
     >
-      <div
-        class="bg-zinc-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3"
+      <svg
+        id="toastSuccessIcon"
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 text-green-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
       >
-        <svg
-          id="toastSuccessIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-green-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <svg
-          id="toastErrorIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-red-400 hidden"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <span id="toastMessage">Saved successfully</span>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <svg
+        id="toastErrorIcon"
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 text-red-400 hidden"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span id="toastMessage">Saved successfully</span>
+    </div>
+  </div>
+
+  <!-- Focus Mode Overlay -->
+  <div id="focusModeOverlay" class="fixed inset-0 bg-zinc-50 z-30 hidden">
+    <div class="max-w-3xl mx-auto py-20 px-8">
+      <input
+        type="text"
+        id="focusTitleInput"
+        class="w-full text-5xl font-bold text-zinc-900 placeholder-zinc-400 border-none focus:outline-none focus:ring-0 bg-transparent mb-8"
+        placeholder="Title"
+      />
+      <div
+        id="focusEditor"
+        class="bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden min-h-[500px]"
+      >
+        <!-- Editor will be cloned here in focus mode -->
       </div>
     </div>
+    <button
+      id="exitFocusMode"
+      class="fixed bottom-8 right-8 px-6 py-3 bg-white border border-zinc-200 rounded-lg shadow-lg hover:bg-zinc-50 transition-colors"
+    >
+      Exit Focus Mode
+    </button>
   </div>
 </Layout>
 
-<script>
-  // This script runs on the client after the page loads
-  // It will be integrated with the PlateEditor component in Phase 9
-
+<script define:vars={{
+  blogTitle: blog?.title || '',
+  blogSlug: blog?.slug || '',
+  blogCoverImage: blog?.coverImage || '',
+  blogExcerpt: blog?.excerpt || '',
+  blogTags: initialTags,
+  blogId: id
+}}>
   interface BlogUpdate {
     title?: string;
     content?: any;
-    excerpt?: string;
+    excerpt?: string | null;
     status?: string;
+    slug?: string;
     tags?: string[] | null;
+    coverImage?: string | null;
   }
 
-  const editorContainer = document.getElementById("editor-container");
-  const saveBtn = document.getElementById("saveBtn");
-  const statusSelect = document.getElementById("statusSelect");
-  const autoSaveIndicator = document.getElementById("autoSaveIndicator");
-  const blogTitle = document.getElementById("blogTitle");
-  const blogStatus = document.getElementById("blogStatus");
+  // State - initialize with existing blog data
+  let blogMetadata = {
+    title: blogTitle,
+    slug: blogSlug,
+    tags: [...blogTags],
+    coverImage: blogCoverImage,
+    excerpt: blogExcerpt,
+    visibility: "public",
+  };
 
-  const blogId = editorContainer?.dataset.blogId;
-  let lastSavedContent: string = "";
+  let lastSavedContent = "";
+  let lastSavedMetadata = "";
   let autoSaveTimeout: NodeJS.Timeout | null = null;
-  let editorContent: any = null;
+  let currentBlogId = blogId;
+  let isFocusMode = false;
+
+  // Elements
+  const titleInput = document.getElementById("titleInput") as HTMLInputElement;
+  const focusTitleInput = document.getElementById(
+    "focusTitleInput",
+  ) as HTMLInputElement;
+  const slugInput = document.getElementById("slugInput") as HTMLInputElement;
+  const permalinkSection = document.getElementById("permalinkSection");
+  const headerTitle = document.getElementById("headerTitle");
+  const lastSavedInfo = document.getElementById("lastSavedInfo");
+  const statusDisplay = document.getElementById("statusDisplay");
+  const visibilitySelect = document.getElementById(
+    "visibilitySelect",
+  ) as HTMLSelectElement;
+  const statusSelect = document.getElementById("statusSelect") as HTMLSelectElement;
+  const featuredImageInput = document.getElementById(
+    "featuredImageInput",
+  ) as HTMLInputElement;
+  const featuredImagePreview = document.getElementById("featuredImagePreview");
+  const featuredImageImg = document.getElementById(
+    "featuredImageImg",
+  ) as HTMLImageElement;
+  const excerptInput = document.getElementById(
+    "excerptInput",
+  ) as HTMLTextAreaElement;
+  const excerptCount = document.getElementById("excerptCount");
+  const tagInput = document.getElementById("tagInput") as HTMLInputElement;
+  const tagsList = document.getElementById("tagsList");
+  const editorPage = document.getElementById("editorPage");
+  const sidebar = document.getElementById("sidebar");
+  const topToolbar = document.getElementById("topToolbar");
+  const focusModeOverlay = document.getElementById("focusModeOverlay");
+  const focusModeBtn = document.getElementById("focusModeBtn");
+  const exitFocusModeBtn = document.getElementById("exitFocusMode");
+  const previewBtn = document.getElementById("previewBtn");
+  const publishBtn = document.getElementById("publishBtn");
+  const saveBtn = document.getElementById("saveBtn");
+
+  // Initialize tags on page load
+  function initializeTags() {
+    if (!tagsList) return;
+    tagsList.innerHTML = '';
+
+    blogMetadata.tags.forEach((tag: string, index: number) => {
+      const tagEl = document.createElement("span");
+      tagEl.className =
+        "inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs";
+      tagEl.innerHTML = `
+        ${tag}
+        <button type="button" data-index="${index}" class="hover:text-blue-900 ml-1">&times;</button>
+      `;
+      tagsList.appendChild(tagEl);
+    });
+
+    // Add remove event listeners
+    tagsList.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const index = parseInt((e.target as HTMLElement).dataset.index || "0");
+        blogMetadata.tags.splice(index, 1);
+        renderTags();
+      });
+    });
+  }
+
+  // Generate slug from title
+  function generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
 
   // Show toast notification
-  function showToast(message: string, isError: boolean = false): void {
+  function showToast(message: string, isError = false): void {
     const toast = document.getElementById("toast");
     const toastMessage = document.getElementById("toastMessage");
     const toastSuccessIcon = document.getElementById("toastSuccessIcon");
@@ -293,24 +679,150 @@ const description = blog?.excerpt || `Edit ${blog?.title || "blog"}`;
     }, 3000);
   }
 
-  // Save blog
-  async function saveBlog(showNotification: boolean = true): Promise<boolean> {
-    if (!blogId) return false;
+  // Get auth token
+  function getAuthToken(): string | null {
+    const token = localStorage.getItem("auth_token");
+    if (token) return token;
+    const match = document.cookie.match(/auth_token=([^;]+)/);
+    return match ? match[1] : null;
+  }
 
-    // Show saving state
-    saveBtn?.classList.add("opacity-50", "cursor-not-allowed");
-    saveBtn?.setAttribute("disabled", "true");
-    autoSaveIndicator?.classList.remove("hidden");
+  // Authenticated fetch
+  async function authFetch(
+    url: string,
+    options: RequestInit = {},
+  ): Promise<Response> {
+    const token = getAuthToken();
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      ...options.headers,
+    };
+    if (token) {
+      (headers as any)["Authorization"] = `Bearer ${token}`;
+    }
+    return fetch(url, { ...options, headers });
+  }
+
+  // Render tags
+  function renderTags(): void {
+    if (!tagsList) return;
+    tagsList.innerHTML = "";
+
+    blogMetadata.tags.forEach((tag: string, index: number) => {
+      const tagEl = document.createElement("span");
+      tagEl.className =
+        "inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs";
+      tagEl.innerHTML = `
+        ${tag}
+        <button type="button" data-index="${index}" class="hover:text-blue-900 ml-1">&times;</button>
+      `;
+      tagsList.appendChild(tagEl);
+    });
+
+    tagsList.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const index = parseInt((e.target as HTMLElement).dataset.index || "0");
+        blogMetadata.tags.splice(index, 1);
+        renderTags();
+      });
+    });
+  }
+
+  // Add tag
+  function addTag(tagStr?: string): void {
+    const tag = tagStr || tagInput?.value.trim();
+    if (tag && !blogMetadata.tags.includes(tag)) {
+      blogMetadata.tags.push(tag);
+      renderTags();
+      if (tagInput) tagInput.value = "";
+    }
+  }
+
+  // Update header info
+  function updateHeaderInfo(): void {
+    if (headerTitle) {
+      headerTitle.textContent = blogMetadata.title || "Untitled";
+    }
+  }
+
+  // Toggle sidebar panel
+  function setupPanelToggle(buttonId: string, contentId: string) {
+    const button = document.getElementById(buttonId);
+    const content = document.getElementById(contentId);
+
+    button?.addEventListener("click", () => {
+      content?.classList.toggle("hidden");
+      const icon = button.querySelector("svg");
+      icon?.classList.toggle("rotate-180");
+    });
+  }
+
+  // Focus mode
+  function toggleFocusMode(): void {
+    isFocusMode = !isFocusMode;
+
+    if (isFocusMode) {
+      // Enter focus mode
+      focusTitleInput.value = blogMetadata.title;
+      focusModeOverlay?.classList.remove("hidden");
+      topToolbar?.classList.add("-translate-y-full");
+    } else {
+      // Exit focus mode
+      blogMetadata.title = focusTitleInput.value;
+      if (titleInput) titleInput.value = blogMetadata.title;
+      updateHeaderInfo();
+      updateSlugFromTitle();
+      focusModeOverlay?.classList.add("hidden");
+      topToolbar?.classList.remove("-translate-y-full");
+    }
+  }
+
+  // Update slug from title
+  function updateSlugFromTitle(): void {
+    const title = titleInput?.value || "";
+    if (title && slugInput) {
+      // Don't auto-update if user has manually edited slug
+      if (!blogMetadata.slug) {
+        const slug = generateSlug(title);
+        // Only update if different from current value
+        if (slugInput.value !== slug) {
+          slugInput.value = slug;
+        }
+      }
+      permalinkSection?.classList.remove("hidden");
+    } else {
+      permalinkSection?.classList.add("hidden");
+    }
+  }
+
+  // Save blog
+  async function saveBlog(
+    status: string | undefined = undefined,
+    showNotification = true,
+  ): Promise<boolean> {
+    const content = (window as any).editorContent;
+
+    if (!content) {
+      showToast("No content to save", true);
+      return false;
+    }
+
+    // Use status from select if not provided
+    const finalStatus = status || statusSelect?.value || "draft";
+
+    // Update saving state
+    if (publishBtn) publishBtn.textContent = "Saving...";
+    if (publishBtn) publishBtn.disabled = true;
+    if (saveBtn) {
+      saveBtn.textContent = "Saving...";
+      saveBtn.disabled = true;
+    }
 
     try {
-      // Get editor content from global (will be set by PlateEditor in Phase 9)
-      const content = (window as any).editorContent || editorContent;
-
-      // Generate excerpt from content (first paragraph)
-      let excerpt = null;
-      if (content && Array.isArray(content)) {
+      let excerpt = blogMetadata.excerpt;
+      if (!excerpt && Array.isArray(content)) {
         const firstParagraph = content.find((node: any) => node.type === "p");
-        if (firstParagraph && firstParagraph.children) {
+        if (firstParagraph?.children) {
           excerpt = firstParagraph.children
             .map((child: any) => child.text || "")
             .join("")
@@ -318,102 +830,203 @@ const description = blog?.excerpt || `Edit ${blog?.title || "blog"}`;
         }
       }
 
-      // Generate title from first heading or use default
-      let title = "Untitled Blog";
-      if (content && Array.isArray(content)) {
-        const firstHeading = content.find(
-          (node: any) => node.type && node.type.startsWith("h"),
-        );
-        if (firstHeading && firstHeading.children) {
-          title =
-            firstHeading.children
-              .map((child: any) => child.text || "")
-              .join("") || "Untitled Blog";
-        }
-      }
+      const slug = blogMetadata.slug || generateSlug(blogMetadata.title);
 
-      const updateData: BlogUpdate = {
-        title,
+      const blogData: BlogUpdate = {
+        title: blogMetadata.title || "Untitled Blog",
         content,
         excerpt,
-        status: statusSelect?.value || "draft",
+        status: finalStatus,
+        slug,
+        tags: blogMetadata.tags.length > 0 ? blogMetadata.tags : null,
+        coverImage: blogMetadata.coverImage || null,
       };
 
-      const response = await fetch(`/api/blogs/${blogId}`, {
+      const response = await authFetch(`/api/blogs/${currentBlogId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updateData),
+        body: JSON.stringify(blogData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save blog");
+        throw new Error("Failed to save");
       }
 
       const result = await response.json();
 
-      // Update UI
-      if (blogTitle) blogTitle.textContent = result.blog.title;
-      if (blogStatus) blogStatus.textContent = result.blog.status;
+      // Update state
       lastSavedContent = JSON.stringify(content);
+      lastSavedMetadata = JSON.stringify(blogMetadata);
+      blogMetadata.slug = result.blog.slug;
+
+      // Update UI
+      updateHeaderInfo();
+      if (statusDisplay) {
+        statusDisplay.textContent =
+          finalStatus.charAt(0).toUpperCase() + finalStatus.slice(1);
+      }
+      if (publishBtn) {
+        publishBtn.textContent = finalStatus === "published" ? "Update" : "Publish";
+      }
+      if (saveBtn) {
+        saveBtn.textContent = "Update";
+      }
+
+      // Update last saved info
+      const now = new Date();
+      if (lastSavedInfo) {
+        lastSavedInfo.textContent = `Last saved at ${now.toLocaleTimeString()}`;
+      }
 
       if (showNotification) {
-        showToast("Saved successfully");
+        showToast(finalStatus === "published" ? "Published successfully!" : "Saved successfully");
       }
 
       return true;
     } catch (error) {
       console.error("Error saving blog:", error);
-      showToast("Failed to save blog", true);
+      showToast("Failed to save", true);
       return false;
     } finally {
-      saveBtn?.classList.remove("opacity-50", "cursor-not-allowed");
-      saveBtn?.removeAttribute("disabled");
-      autoSaveIndicator?.classList.add("hidden");
+      if (publishBtn) {
+        publishBtn.disabled = false;
+        publishBtn.textContent = "Update";
+      }
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Update";
+      }
     }
   }
 
-  // Auto-save with debounce
+  // Auto-save
   function scheduleAutoSave(): void {
-    if (autoSaveTimeout) {
-      clearTimeout(autoSaveTimeout);
-    }
-
-    autoSaveIndicator?.classList.remove("hidden");
-
-    autoSaveTimeout = setTimeout(() => {
-      saveBlog(false);
-    }, 2000); // Auto-save 2 seconds after last change
+    if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => saveBlog(undefined, false), 3000);
   }
 
-  // Event listeners
-  saveBtn?.addEventListener("click", () => saveBlog(true));
-
-  statusSelect?.addEventListener("change", () => {
-    saveBlog(true);
+  // Event Listeners
+  // Title input
+  titleInput?.addEventListener("input", () => {
+    blogMetadata.title = titleInput.value;
+    updateHeaderInfo();
+    updateSlugFromTitle();
+    scheduleAutoSave();
   });
 
-  // Listen for editor content changes (will be dispatched by PlateEditor in Phase 9)
-  window.addEventListener("editor-content-change", ((event: CustomEvent) => {
-    editorContent = event.detail;
-    const currentContent = JSON.stringify(event.detail);
+  // Slug input - mark as manually edited
+  slugInput?.addEventListener("input", () => {
+    blogMetadata.slug = slugInput.value;
+  });
 
-    // Only auto-save if content actually changed
+  // Focus title sync
+  focusTitleInput?.addEventListener("input", () => {
+    blogMetadata.title = focusTitleInput.value;
+    if (titleInput) titleInput.value = blogMetadata.title;
+    updateHeaderInfo();
+  });
+
+  // Featured image
+  featuredImageInput?.addEventListener("input", () => {
+    const url = featuredImageInput.value;
+    blogMetadata.coverImage = url;
+    if (url && featuredImagePreview && featuredImageImg) {
+      featuredImageImg.src = url;
+      featuredImagePreview.classList.remove("hidden");
+    } else if (featuredImagePreview && !url) {
+      featuredImagePreview.classList.add("hidden");
+    }
+  });
+
+  document
+    .getElementById("removeFeaturedImage")
+    ?.addEventListener("click", () => {
+      blogMetadata.coverImage = "";
+      if (featuredImageInput) featuredImageInput.value = "";
+      if (featuredImagePreview) featuredImagePreview.classList.add("hidden");
+    });
+
+  // Excerpt
+  excerptInput?.addEventListener("input", () => {
+    blogMetadata.excerpt = excerptInput.value;
+    if (excerptCount) {
+      excerptCount.textContent = excerptInput.value.length.toString();
+    }
+  });
+
+  // Tags
+  document.getElementById("addTagBtn")?.addEventListener("click", () => addTag());
+  tagInput?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag();
+    }
+  });
+  tagInput?.addEventListener("blur", () => {
+    const value = tagInput.value.trim();
+    if (value) {
+      value.split(",").forEach((t) => addTag(t.trim()));
+    }
+  });
+
+  // Buttons
+  focusModeBtn?.addEventListener("click", toggleFocusMode);
+  exitFocusModeBtn?.addEventListener("click", toggleFocusMode);
+
+  previewBtn?.addEventListener("click", () => {
+    showToast("Preview coming soon!", false);
+  });
+
+  publishBtn?.addEventListener("click", () => saveBlog("published"));
+  saveBtn?.addEventListener("click", () => saveBlog());
+  statusSelect?.addEventListener("change", () => saveBlog());
+
+  // Panel toggles
+  setupPanelToggle("togglePublishPanel", "publishPanelContent");
+  setupPanelToggle("toggleFeaturedImage", "featuredImageContent");
+  setupPanelToggle("toggleTags", "tagsContent");
+  setupPanelToggle("toggleExcerpt", "excerptContent");
+  setupPanelToggle("toggleCategories", "categoriesContent");
+
+  // Editor content changes
+  window.addEventListener("editor-content-change", ((event: CustomEvent) => {
+    const currentContent = JSON.stringify(event.detail);
     if (currentContent !== lastSavedContent) {
       scheduleAutoSave();
     }
   }) as EventListener);
 
-  // Warn before leaving if there are unsaved changes
+  // Warn before leaving with unsaved changes
   window.addEventListener("beforeunload", (e) => {
-    const currentContent = JSON.stringify(
-      (window as any).editorContent || editorContent,
-    );
+    const currentContent = JSON.stringify((window as any).editorContent);
+    const currentMetadata = JSON.stringify(blogMetadata);
 
-    if (currentContent !== lastSavedContent) {
+    if (
+      currentContent !== lastSavedContent ||
+      currentMetadata !== lastSavedMetadata
+    ) {
       e.preventDefault();
       e.returnValue = "";
     }
   });
+
+  // Keyboard shortcuts
+  window.addEventListener("keydown", (e) => {
+    // Ctrl/Cmd + S to save
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      e.preventDefault();
+      saveBlog();
+    }
+    // Ctrl/Cmd + Shift + P to publish
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "P") {
+      e.preventDefault();
+      saveBlog("published");
+    }
+    // Escape to exit focus mode
+    if (e.key === "Escape" && isFocusMode) {
+      toggleFocusMode();
+    }
+  });
+
+  // Initialize tags on page load
+  initializeTags();
 </script>
